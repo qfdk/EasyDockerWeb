@@ -1,0 +1,23 @@
+<% include include/header.html %>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="jumbotron">
+                    <h3>
+                        <%= message %>
+                    </h3>
+                    <h4>
+                        <%= error.status %>
+                    </h4>
+                </div>
+                <a class="btn btn-danger" href="/meeting">Return</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+
+        </div>
+    </div>
+    <% include include/footer.html %>

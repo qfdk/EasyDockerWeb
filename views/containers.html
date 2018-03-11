@@ -1,0 +1,63 @@
+<% include include/header.html %>
+    <div class="col-md-12">
+        <table data-toggle="table">
+            <thead>
+                <tr>
+                    <th>Names</th>
+                    <th>Image</th>
+                    <th>State</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(containers){ %>
+                    <% containers.forEach(function(container,index){ %>
+                        <tr>
+                            <td>
+                                <%= formatName(container.Names); %>
+                            </td>
+                            <td>
+                                <%= container.Image %>
+                            </td>
+                            <td>
+                                <% if(container.State=='running'){ %>
+                                    <span class="label label-success btn-xs"><%= container.State %></span>
+                                <% } %>
+                                <% if(container.State=='exited'){ %>
+                                    <span class="label label-danger btn-xs"><%= container.State %></span>
+                                <% } %>
+                                <% if(container.State=='created'){ %>
+                                    <span class="label label-warning btn-xs"><%= container.State %></span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if(container.State=='running'){ %>
+                                    <a class="btn btn-warning btn-xs" href="/containers/stop/<%= container.Id %>">
+                                        <span class="glyphicon glyphicon-stop"></span> Stop
+                                    </a>
+                                    <a class="btn btn-primary btn-xs" href="/containers/attach/<%= container.Id %>">
+                                       <span class="glyphicon glyphicon-console"></span> Console
+                                    </a>
+                                <% } %>
+                                <% if(container.State=='exited'){ %>
+                                    <a class="btn btn-success btn-xs" href="/containers/start/<%= container.Id %>">
+                                        <span class="glyphicon glyphicon-play"></span> Start
+                                    </a>
+                                    <a class="btn btn-danger btn-xs" href="/containers/remove/<%= container.Id %>">
+                                        <span class="glyphicon glyphicon-trash"></span> Remove
+                                    </a>
+                                <% } %>
+                                <% if(container.State=='created'){ %>
+                                    <a class="btn btn-danger btn-xs" href="/containers/remove/<%= container.Id %>">
+                                        <span class="glyphicon glyphicon-trash"></span> Remove
+                                    </a>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% }) %>
+
+                            <% } %>
+            </tbody>
+        </table>
+    </div>
+    <% include include/footer.html %>
