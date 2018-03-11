@@ -27,7 +27,6 @@ router.get('/', function (req, res, next) {
 router.get('/start/:id', function (req, res, next) {
   var container = docker.getContainer(req.params.id);
   container.start(function (err, data) {
-    console.log(data);
     res.redirect('/containers');
   });
 });
@@ -35,7 +34,6 @@ router.get('/start/:id', function (req, res, next) {
 router.get('/stop/:id', function (req, res, next) {
   var container = docker.getContainer(req.params.id);
   container.stop(function (err, data) {
-    console.log(data);
     res.redirect('/containers');
   });
 });
@@ -43,7 +41,6 @@ router.get('/stop/:id', function (req, res, next) {
 router.get('/remove/:id', function (req, res, next) {
   var container = docker.getContainer(req.params.id);
   container.remove(function (err, data) {
-    console.log(data);
     res.redirect('/containers');
   });
 });
