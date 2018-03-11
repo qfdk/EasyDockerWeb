@@ -13,7 +13,7 @@ var docker = new Docker({ socketPath: socket });
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-  docker.listImages({ all: true }, function (err, listImages) {
+  docker.listImages(function (err, listImages) {
     console.log(listImages);
     res.locals.imageName = function (str) {
       if (str) {
