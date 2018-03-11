@@ -1,0 +1,37 @@
+<% include include/header.html %>
+    <div class="col-md-12" data-page="images">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>REPOSITORY</th>
+                    <th>TAG</th>
+                    <th>Size</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(images){ %>
+                    <% images.forEach(function(image,index){ %>
+                        <tr>
+                            <td>
+                                <%= imageName(image.RepoTags) %>
+                            </td>
+                            <td>
+                                <%= imageTag(image.RepoTags) %>
+                            </td>
+                            <td>
+                                <%= imageSize(image.Size) %> MB
+                            </td>
+                            <td>
+                                <a class="btn btn-danger btn-xs" href="/images/remove/<%= image.Id %>">
+                                    <span class="glyphicon glyphicon-trash"></span> Remove
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+
+                        <% } %>
+            </tbody>
+        </table>
+    </div>
+    <% include include/footer.html %>
