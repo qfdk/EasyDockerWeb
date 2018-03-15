@@ -2,10 +2,10 @@ $(document).ready(function () {
     var codePageCourante = $("[data-page]").attr("data-page");
 
     if (codePageCourante == 'containers') {
-        $('#'+codePageCourante+'Nav').addClass('active');
+        $('#' + codePageCourante + 'Nav').addClass('active');
     }
     if (codePageCourante == 'images') {
-        $('#'+codePageCourante+'Nav').addClass('active');
+        $('#' + codePageCourante + 'Nav').addClass('active');
     }
     if (codePageCourante == 'terminal') {
         terminal();
@@ -16,6 +16,7 @@ $(document).ready(function () {
 function terminal() {
     Terminal.applyAddon(attach);
     Terminal.applyAddon(fit);
+
     var term = new Terminal({
         useStyle: true,
         convertEol: true,
@@ -24,9 +25,23 @@ function terminal() {
         visualBell: true,
         colors: Terminal.xtermColors
     });
+
     term.open(document.getElementById('terminal'));
+    term.fit();
     var id = window.location.pathname.split('/')[3];
-    var socket = new WebSocket('ws://127.0.0.1:2375/v1.24/containers/' + id + '/attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1');
-    term.attach(socket);
-    term._initialized = true;
+    var host = window.location.origin;
+    var socket = io.connect(host);
+    socket.emit('exec', id, $('#terminal').width(), $('#terminal').height());
+    term.on('data', (data) => {
+        socket.emit('cmd', data);
+    });
+
+    socket.on('show', (data) => {
+        term.write(data);
+    });
+
+    socket.on('exec', (status) => {
+        $('#terminal').empty();
+        socket.end();
+    });
 }

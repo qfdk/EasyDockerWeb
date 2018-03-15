@@ -1,15 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Docker = require('dockerode');
-var fs = require('fs');
-
-var socket = process.env.DOCKER_SOCKET || '/var/run/docker.sock';
-var stats = fs.statSync(socket);
-
-if (!stats.isSocket()) {
-  throw new Error('Are you sure the docker is running?');
-}
-var docker = new Docker({ socketPath: socket });
+var docker = new Docker();
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
