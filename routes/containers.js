@@ -4,16 +4,19 @@ var Docker = require('dockerode');
 
 var docker = new Docker();
 var returnContainersRouter = function (io) {
-  /* GET users listing. */
+  /* GET containers. */
   router.get('/', function (req, res, next) {
     docker.listContainers({ all: true }, function (err, containers) {
       res.locals.formatName = function (str) {
         return str[0].split('/')[1];
       }
-      res.render('containers',
-        {
-          containers: containers
-        });
+      docker.listImages(function (err, listImages) {
+        res.render('containers',
+          {
+            containers: containers,
+            images: listImages
+          });
+      });
     });
   });
 
@@ -38,8 +41,36 @@ var returnContainersRouter = function (io) {
     });
   });
 
-  router.get('/attach/:id', function (req, res, next) {
+  // todo
+  router.post('/create', function (req, res, next) {
+    var options = {
+      Image: req.body.containerImage,
+      AttachStdin: false,
+      AttachStdout: true,
+      AttachStderr: true,
+      Tty: true,
+      Cmd: ['bash'],
+      OpenStdin: false,
+      StdinOnce: false
+    }
+
+    // docker.run(options.Image,options.Cmd, [process.stdout, process.stderr], {Tty:true}, function (err, data, container) {
+    //   console.log(data.StatusCode);
+    //   res.redirect("/containers/run/" + container.id);
+    // });
+
+    // // docker.run(options, function (err, container) {
+    // //   res.redirect("/containers/run/" + container.id);
+    // // });
+
+  });
+
+  router.get('/console/:id', function (req, res, next) {
     res.render('terminal');
+  });
+
+  router.get('/run/:id', function (req, res, next) {
+    res.render('logs');
   });
 
   io.on('connection', function (socket) {
@@ -87,6 +118,34 @@ var returnContainersRouter = function (io) {
 
         });
       });
+    });
+
+    // todo
+    socket.on('attach', function (id, w, h) {
+      var container = docker.getContainer(id);
+      container.attach({ stream: true, stdout: true, stderr: true }, (err, stream) => {
+        var dimensions = { h, w };
+
+        if (dimensions.h != 0 && dimensions.w != 0) {
+          container.resize(dimensions, () => { });
+        }
+
+        stream.on('readable', (data) => {
+          // there is some data to read now
+          console.log(data)
+        });
+        stream.on('data', (chunk) => {
+          console.log(chunk.toString())
+          socket.emit('show', chunk.toString());
+        });
+
+        socket.on('cmd', (data) => {
+          console.log(data)
+          stream.write(data);
+        });
+      });
+
+
     });
   });
   return router;
