@@ -54,6 +54,9 @@
                                     </a>
                                 <% } %>
                                 <% if(container.State=='created'){ %>
+                                    <a class="btn btn-primary btn-xs" href="/containers/run/<%= container.Id %>">
+                                        <span class="glyphicon glyphicon-play"></span> Lancer
+                                    </a>
                                     <a class="btn btn-danger btn-xs" href="/containers/remove/<%= container.Id %>">
                                         <span class="glyphicon glyphicon-trash"></span> Remove
                                     </a>

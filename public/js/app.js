@@ -43,7 +43,7 @@ function terminal() {
 
     socket.on('exec', (status) => {
         $('#terminal').empty();
-        socket.end();
+        //socket.end();
     });
 }
 
@@ -66,16 +66,12 @@ function logs() {
     var socket = io.connect(host);
     socket.emit('attach', id, $('#terminal').width(), $('#terminal').height());
 
-    term.on('data', (data) => {
-        socket.emit('cmd', data);
-    });
-
     socket.on('show', (data) => {
         term.write(data);
     });
 
-    socket.on('attach', (status) => {
-        $('#terminal').empty();
-        socket.end();
-    });
+    // socket.on('attach', (status) => {
+    //     $('#terminal').empty();
+    //     //socket.end();
+    // });
 }
