@@ -66,7 +66,9 @@ var returnContainersRouter = function (io) {
     if (req.body.containerCmd) {
       options.Cmd = ['/bin/bash', '-c', req.body.containerCmd];
       docker.createContainer(options, function (err, container) {
-        res.redirect('/containers/run/' + container.id);
+        container.start(function (err, data) {
+          res.redirect('/containers/logs/' + container.id);
+        });
       });
     } else {
       var runOpt = {
@@ -94,7 +96,7 @@ var returnContainersRouter = function (io) {
     res.render('terminal');
   });
 
-  router.get('/run/:id', function (req, res, next) {
+  router.get('/logs/:id', function (req, res, next) {
     res.render('logs');
   });
 
@@ -120,7 +122,7 @@ var returnContainersRouter = function (io) {
         };
 
         container.wait((err, data) => {
-          socket.emit('exec', 'ended');
+          socket.emit('end', 'ended');
         });
 
         if (err) {
@@ -147,44 +149,30 @@ var returnContainersRouter = function (io) {
 
     socket.on('attach', function (id, w, h) {
       var container = docker.getContainer(id);
-      let options = {
-        stream: true,
-        stdin: false,
+      var logs_opts = {
+        follow: true,
         stdout: true,
-        stderr: true
+        stderr: true,
+        timestamps: true
       };
-      container.start(function (err, stream) {
-        containerLogs(container, socket);
-      });
+      // var attach_opts = {
+      //   stream: true,
+      //   stdin: true,
+      //   stdout: true,
+      //   stderr: true
+      // };
+      function handler(err, stream) {
+        stream.on('data', function (chunk) {
+          socket.emit('show', chunk.toString('utf8'));
+        });
+        stream.on('end', function () {
+          socket.emit('end', 'ended');
+        });
+      }
+      container.logs(logs_opts, handler);
+      //container.attach(attach_opts, handler);
     });
   });
-
-  /**
-   * Get logs from running container
-   */
-  function containerLogs(container, socket) {
-    // create a single stream for stdin and stdout
-    var logStream = new stream.PassThrough();
-    logStream.on('data', function (chunk) {
-      socket.emit('show', chunk.toString('utf8'));
-    });
-
-    container.logs({
-      follow: true,
-      stdout: true,
-      stderr: true
-    }, function (err, stream) {
-      if (err) {
-        stream.destroy();
-        return logger.error(err.message);
-      }
-      container.modem.demuxStream(stream, logStream, logStream);
-      stream.on('end', function () {
-        logStream.end('===Stream close.===');
-        socket.emit('attach', 'ended');
-      });
-    });
-  }
 
   return router;
 }

@@ -41,9 +41,9 @@ function terminal() {
         term.write(data);
     });
 
-    socket.on('exec', (status) => {
+    socket.on('end', (status) => {
         $('#terminal').empty();
-        //socket.end();
+        socket.disconnect();
     });
 }
 
@@ -70,8 +70,8 @@ function logs() {
         term.write(data);
     });
 
-    // socket.on('attach', (status) => {
-    //     $('#terminal').empty();
-    //     //socket.end();
-    // });
+    socket.on('end', (status) => {
+        //$('#terminal').empty();
+        socket.disconnect();
+    });
 }
