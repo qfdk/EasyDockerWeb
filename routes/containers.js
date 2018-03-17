@@ -43,18 +43,50 @@ var returnContainersRouter = function (io) {
   });
 
   router.post('/create', function (req, res, next) {
+
     var options = {
       Image: req.body.containerImage,
       AttachStdin: false,
       AttachStdout: true,
       AttachStderr: true,
       Tty: false,
-      Cmd: ['/bin/bash', '-c', req.body.containerCmd]
     }
 
-    docker.createContainer(options, function (err, container) {
-      res.redirect('/containers/run/' + container.id);
-    });
+    if (req.body.containerVolumeSource !== "" && req.body.containerVolumeDistination !== "") {
+      var src = req.body.containerVolumeSource;
+      var dis = req.body.containerVolumeDistination;
+      options.Volumes = {
+        dis: {}
+      };
+      options.HostConfig = {
+        'Binds': [src + ':' + dis]
+      }
+    }
+
+    if (req.body.containerCmd) {
+      options.Cmd = ['/bin/bash', '-c', req.body.containerCmd];
+      docker.createContainer(options, function (err, container) {
+        res.redirect('/containers/run/' + container.id);
+      });
+    } else {
+      var runOpt = {
+        Image: req.body.containerImage,
+        AttachStdin: true,
+        AttachStdout: true,
+        AttachStderr: true,
+        Tty: true,
+        Cmd: ['/bin/bash'],
+        OpenStdin: false,
+        StdinOnce: false
+      };
+      runOpt['Volumes'] = options.Volumes;
+      runOpt['HostConfig'] = options.HostConfig;
+      docker.createContainer(runOpt).then(function (container) {
+        return container.start();
+      }).then(function (container) {
+        res.redirect('/containers');
+      })
+    }
 
   });
 
@@ -127,9 +159,9 @@ var returnContainersRouter = function (io) {
     });
   });
 
-/**
- * Get logs from running container
- */
+  /**
+   * Get logs from running container
+   */
   function containerLogs(container, socket) {
     // create a single stream for stdin and stdout
     var logStream = new stream.PassThrough();
@@ -148,7 +180,7 @@ var returnContainersRouter = function (io) {
       }
       container.modem.demuxStream(stream, logStream, logStream);
       stream.on('end', function () {
-        logStream.end('Stream close.');
+        logStream.end('===Stream close.===');
         socket.emit('attach', 'ended');
       });
     });
