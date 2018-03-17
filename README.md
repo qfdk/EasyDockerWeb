@@ -33,7 +33,11 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 ```
 ## Images
 
+![overview](./images/overview.png)
+
 ![terminal](./images/terminal.png)
+
+![newContainer](./images/newContainer.png)
 
 ![containers](./images/containers.png)
 

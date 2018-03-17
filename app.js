@@ -6,6 +6,7 @@ var io = require('socket.io')();
 app.io = io;
 
 var index = require('./routes/index');
+var overview = require('./routes/overview');
 var containers = require('./routes/containers')(io);
 var images = require('./routes/images');
 
@@ -22,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
+app.use('/overview', overview);
 app.use('/containers', containers);
 app.use('/images', images);
 

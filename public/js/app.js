@@ -1,12 +1,12 @@
 $(document).ready(function () {
     var codePageCourante = $("[data-page]").attr("data-page");
 
-    if (codePageCourante == 'containers') {
-        $('#' + codePageCourante + 'Nav').addClass('active');
-    }
-    if (codePageCourante == 'images') {
-        $('#' + codePageCourante + 'Nav').addClass('active');
-    }
+    // if (codePageCourante == 'containers') {
+    //     $('#' + codePageCourante + 'Nav').addClass('active');
+    // }
+    // if (codePageCourante == 'images') {
+    $('#' + codePageCourante + 'Nav').addClass('active');
+    // }
     if (codePageCourante == 'terminal') {
         terminal();
     }
