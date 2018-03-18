@@ -38,29 +38,29 @@
                             </td>
                             <td>
                                 <% if(container.State=='running'){ %>
-                                    <a class="btn btn-warning btn-xs" href="/containers/stop/<%= container.Id %>">
+                                    <a class="btn btn-warning btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/stop/<%= container.Id %>">
                                         <span class="glyphicon glyphicon-stop"></span> Stop
                                     </a>
-                                    <a class="btn btn-primary btn-xs" href="/containers/console/<%= container.Id %>">
+                                    <a class="btn btn-primary btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/console/<%= container.Id %>">
                                        <span class="glyphicon glyphicon-console"></span> Console
                                     </a>
                                 <% } %>
                                 <% if(container.State=='exited'){ %>
-                                    <a class="btn btn-success btn-xs" href="/containers/start/<%= container.Id %>">
+                                    <a class="btn btn-success btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/start/<%= container.Id %>">
                                         <span class="glyphicon glyphicon-play"></span> Start
                                     </a>
-                                    <a class="btn btn-danger btn-xs" href="/containers/remove/<%= container.Id %>">
+                                    <a class="btn btn-danger btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/remove/<%= container.Id %>">
                                         <span class="glyphicon glyphicon-trash"></span> Remove
                                     </a>
                                 <% } %>
                                 <% if(container.State=='created'){ %>
-                                    <a class="btn btn-danger btn-xs" href="/containers/remove/<%= container.Id %>">
+                                    <a class="btn btn-danger btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/remove/<%= container.Id %>">
                                         <span class="glyphicon glyphicon-trash"></span> Remove
                                     </a>
                                 <% } %>
-                                <a class="btn btn-info btn-xs" href="/containers/logs/<%= container.Id %>">
-                                    <span class="glyphicon glyphicon-comment"></span> Logs
-                                 </a>
+                                    <a class="btn btn-info btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/logs/<%= container.Id %>">
+                                        <span class="glyphicon glyphicon-comment"></span> Logs
+                                    </a>
                             </td>
                         </tr>
                         <% }) %>
@@ -108,7 +108,7 @@
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Comfirme</button>
+            <button id="create" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." class="btn btn-primary">Comfirme</button>
             </div>
          </form>
       </div>

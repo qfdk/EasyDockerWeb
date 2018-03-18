@@ -23,7 +23,7 @@
                                 <%= imageSize(image.Size) %> MB
                             </td>
                             <td>
-                                <a class="btn btn-danger btn-xs" href="/images/remove/<%= image.Id %>">
+                                <a class="btn btn-danger btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/images/remove/<%= image.Id %>">
                                     <span class="glyphicon glyphicon-trash"></span> Remove
                                 </a>
                             </td>

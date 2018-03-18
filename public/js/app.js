@@ -1,12 +1,7 @@
 $(document).ready(function () {
     var codePageCourante = $("[data-page]").attr("data-page");
-
-    // if (codePageCourante == 'containers') {
-    //     $('#' + codePageCourante + 'Nav').addClass('active');
-    // }
-    // if (codePageCourante == 'images') {
     $('#' + codePageCourante + 'Nav').addClass('active');
-    // }
+    loading();
     if (codePageCourante == 'terminal') {
         terminal();
     }
@@ -74,4 +69,13 @@ function logs() {
         //$('#terminal').empty();
         socket.disconnect();
     });
+}
+
+function loading() {
+    $('a.btn').on('click', function () {
+        var $btn = $(this).button('loading');
+    });
+    $('#create').on('click', function () {
+        var $btn = $(this).button('loading');
+    })
 }
