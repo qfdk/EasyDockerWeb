@@ -149,28 +149,29 @@ var returnContainersRouter = function (io) {
 
     socket.on('attach', function (id, w, h) {
       var container = docker.getContainer(id);
+
+      var logStream = new stream.PassThrough();
+      logStream.on('data', function(chunk){
+        socket.emit('show', chunk.toString('utf8'));
+      });
+
       var logs_opts = {
         follow: true,
         stdout: true,
         stderr: true,
-        timestamps: true
+        timestamps: false
       };
-      // var attach_opts = {
-      //   stream: true,
-      //   stdin: true,
-      //   stdout: true,
-      //   stderr: true
-      // };
       function handler(err, stream) {
-        stream.on('data', function (chunk) {
-          socket.emit('show', chunk.toString('utf8'));
-        });
-        stream.on('end', function () {
+        container.modem.demuxStream(stream, logStream, logStream);
+        if (!err && stream) {
+        stream.on('end', function(){
+          logStream.end('===Logs stream finished===');
           socket.emit('end', 'ended');
+          stream.destroy();
         });
+        }
       }
       container.logs(logs_opts, handler);
-      //container.attach(attach_opts, handler);
     });
   });
 

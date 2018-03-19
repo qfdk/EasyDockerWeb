@@ -11,6 +11,7 @@
                 <tr>
                     <th>Names</th>
                     <th>Image</th>
+                    <th>Command</th>
                     <th>State</th>
                     <th>Action</th>
                 </tr>
@@ -24,6 +25,9 @@
                             </td>
                             <td>
                                 <%= container.Image %>
+                            </td>
+                            <td>
+                                <%= container.Command %>
                             </td>
                             <td>
                                 <% if(container.State=='running'){ %>

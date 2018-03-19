@@ -48,9 +48,9 @@ function logs() {
     var term = new Terminal({
         useStyle: true,
         convertEol: true,
-        screenKeys: true,
+        screenKeys: false,
         cursorBlink: false,
-        visualBell: true,
+        visualBell:false,
         colors: Terminal.xtermColors
     });
 
@@ -66,7 +66,6 @@ function logs() {
     });
 
     socket.on('end', (status) => {
-        //$('#terminal').empty();
         socket.disconnect();
     });
 }
