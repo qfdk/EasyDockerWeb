@@ -32,7 +32,11 @@
                             </td>
                             <td>
                                 <% if(container.Ports[0]){ %>
-                                    tcp: <%= container.Ports[0].PrivatePort %> => <%= container.Ports[0].PublicPort %>
+                                    [TCP]
+                                    <%= container.Ports[0].PrivatePort %>
+                                    <% if(container.Ports[0].PublicPort){ %>
+                                        -> <%= container.Ports[0].PublicPort %>
+                                    <% } %>
                                 <% } %>
                             </td>
                             <td>

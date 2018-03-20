@@ -12,7 +12,6 @@ var returnContainersRouter = function (io) {
         return str[0].split('/')[1];
       }
       docker.listImages(function (err, listImages) {
-        console.log(containers[0])
         res.render('containers',
           {
             containers: containers,
@@ -42,23 +41,6 @@ var returnContainersRouter = function (io) {
       res.redirect('/containers');
     });
   });
-
-  // router.post('/create', function (req, res, next) {
-
-  //   var image = req.body.containerImage;
-  //   var containerVolumeSource = req.body.containerVolumeSource;
-  //   var containerVolumeDistination = req.body.containerVolumeDistination;
-  //   var containerPortSource = req.body.containerPortSource + '/tcp';
-  //   var containerPortDistination = req.body.containerPortDistination;
-  //   var cmd = req.body.containerCmd;
-
-  //   var options = {};
-  //   options['Volumes'] = JSON.parse('{"' + containerVolumeDistination + '": {}}');
-  //   options.HostConfig = {
-  //     'Binds': [containerVolumeSource + ':' + containerVolumeDistination]
-  //   }
-  //   var tmp = options;
-  // });
 
   router.post('/create', function (req, res, next) {
 
