@@ -46,6 +46,13 @@ var returnImagesRouter = function (io) {
     });
   });
 
+  router.get('/search/:name', function (req, res, next) {
+    var name = req.params.name;
+    docker.searchImages({ term: name }, function (err, data) {
+      if (err) throw err;
+      res.json(data);
+    });
+  });
   io.on('connection', function (socket) {
     socket.on('pull', function (imageName, w, h) {
       docker.pull(imageName, function (err, stream) {
