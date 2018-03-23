@@ -8,6 +8,11 @@ $(document).ready(function () {
     if (codePageCourante == 'logs') {
         logs();
     }
+    if (codePageCourante == 'images') {
+        $('#pullImage').on('click', function () {
+            pullIamges();
+        });
+    }
 });
 
 function terminal() {
@@ -50,7 +55,7 @@ function logs() {
         convertEol: true,
         screenKeys: false,
         cursorBlink: false,
-        visualBell:false,
+        visualBell: false,
         colors: Terminal.xtermColors
     });
 
@@ -70,11 +75,42 @@ function logs() {
     });
 }
 
+function pullIamges() {
+    Terminal.applyAddon(attach);
+    Terminal.applyAddon(fit);
+    var term = new Terminal({
+        useStyle: true,
+        convertEol: true,
+        screenKeys: false,
+        cursorBlink: false,
+        visualBell: false,
+        colors: Terminal.xtermColors
+    });
+
+    term.open(document.getElementById('terminal'));
+    term.fit();
+    var imagesName = $('#imageName').val();
+    var host = window.location.origin;
+    var socket = io.connect(host);
+    socket.emit('pull', imagesName, $('#terminal').width(), $('#terminal').height());
+    socket.on('show', (data) => {
+        term.write(data);
+    });
+
+    socket.on('end', (status) => {
+        socket.disconnect();
+        location.reload(); 
+    });
+}
+
 function loading() {
     $('a.btn').on('click', function () {
         var $btn = $(this).button('loading');
     });
     $('#create').on('click', function () {
+        var $btn = $(this).button('loading');
+    })
+    $('#pullImage').on('click', function () {
         var $btn = $(this).button('loading');
     })
 }

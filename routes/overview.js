@@ -9,10 +9,12 @@ router.get('/', function (req, res, next) {
       res.render('error', {
         message: "Docker is running ?"
       });
+    } else {
+      res.render('overview', {
+        info: info
+      });
     }
-    res.render('overview', {
-      info: info
-    });
+
   });
 });
 

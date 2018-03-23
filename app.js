@@ -8,7 +8,7 @@ app.io = io;
 var index = require('./routes/index');
 var overview = require('./routes/overview');
 var containers = require('./routes/containers')(io);
-var images = require('./routes/images');
+var images = require('./routes/images')(io);
 
 
 // view engine setup
