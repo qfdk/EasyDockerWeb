@@ -12,6 +12,15 @@ $(document).ready(function () {
         $('#pullImage').on('click', function () {
             pullIamges();
         });
+
+        $('#imageName').typeahead({
+            limit: 10,
+            source: function (query, process) {
+                return $.get("/images/search/" + $('#imageName').val(), function (data) {
+                    return process(data);
+                });
+            }
+        });
     }
 });
 
@@ -99,7 +108,7 @@ function pullIamges() {
 
     socket.on('end', (status) => {
         socket.disconnect();
-        location.reload(); 
+        location.reload();
     });
 }
 
