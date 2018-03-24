@@ -99,6 +99,12 @@ function pullIamges() {
     term.open(document.getElementById('terminal'));
     term.fit();
     var imagesName = $('#imageName').val();
+    var version = $('#imageVersionName').val();
+    if (version) {
+        imagesName = imagesName + ':' + version;
+    } else {
+        imagesName = imagesName + ':latest';
+    }
     var host = window.location.origin;
     var socket = io.connect(host);
     socket.emit('pull', imagesName, $('#terminal').width(), $('#terminal').height());

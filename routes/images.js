@@ -39,7 +39,7 @@ var returnImagesRouter = function (io) {
 
   router.get('/remove/:id', function (req, res, next) {
     var image = docker.getImage(req.params.id);
-    image.remove(function (err, data) {
+    image.remove({ force: true }, function (err, data) {
       if (!err) {
         res.redirect('/images');
       }
@@ -66,7 +66,7 @@ var returnImagesRouter = function (io) {
 
         function onProgress(event) {
           if (event.id) {
-            socket.emit('show', event.status + ' ' + event.id + '\n');
+            socket.emit('show', event.status + ':' + event.id + '\n');
           } else {
             socket.emit('show', event.status + '\n');
           }

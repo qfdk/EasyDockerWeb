@@ -37,7 +37,7 @@ var returnContainersRouter = function (io) {
 
   router.get('/remove/:id', function (req, res, next) {
     var container = docker.getContainer(req.params.id);
-    container.remove(function (err, data) {
+    container.remove({ force: true }, function (err, data) {
       res.redirect('/containers');
     });
   });

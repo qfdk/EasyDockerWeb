@@ -43,7 +43,7 @@
     </div>
     <div class="modal fade" id="modelImage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
-            <div class="modal-content" style="min-width: 700px;">
+            <div class="modal-content modal-lg">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -53,8 +53,16 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="form-inline">
-                            <label for="imageName">Image name: </label>
-                            <input type="text" class="form-control typeahead" data-provide="typeahead" autocomplete="off" name="imageName" id="imageName">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="imageName">Image name: </label>
+                                    <input type="text" class="form-control typeahead" data-provide="typeahead" autocomplete="off" name="imageName" id="imageName">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="imageVersionName">Version: </label>
+                                    <input type="text" class="form-control typeahead" placeholder="latest" autocomplete="off" name="imageVersionName" id="imageVersionName">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
