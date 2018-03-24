@@ -3,6 +3,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var app = express();
 var io = require('socket.io')();
+var favicon = require('serve-favicon');
 app.io = io;
 
 var index = require('./routes/index');
@@ -17,7 +18,7 @@ app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
 // public files
 app.use('/static', express.static(__dirname + '/public'));
-
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
