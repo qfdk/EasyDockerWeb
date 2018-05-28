@@ -2,6 +2,9 @@
 
 A simple Web Ui for Docker using `xterm.js`, `Node.js` and `Socket.io`
 
+- 简单就是简单没有复杂的功能，没有学习成本
+- 复杂功能 请[https://portainer.io/](https://portainer.io/)
+
 ## Quick start
 
 ```bash
