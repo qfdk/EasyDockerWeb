@@ -50,6 +50,9 @@ var returnContainersRouter = function (io) {
       AttachStdout: true,
       AttachStderr: true,
       Tty: false,
+      HostConfig: {
+        PortBindings: {}
+      }
     }
 
     // volume
@@ -66,12 +69,12 @@ var returnContainersRouter = function (io) {
     if (req.body.containerPortSource !== "" && req.body.containerPortDistination !== "") {
       var src = req.body.containerPortSource + '/tcp';
       var dis = req.body.containerPortDistination;
-      var tmp = '{ "' + src + '": [{ "HostPort": "' + dis + '" }]}';
-      options.HostConfig['PortBindings'] = JSON.parse(tmp);
       options['ExposedPorts'] = JSON.parse('{"' + src + '": {}}');
+      var tmp = '{ "' + src + '": [{ "HostPort":"' + dis + '" }]}';
+      options.HostConfig.PortBindings = JSON.parse(tmp);
     }
 
-    if (req.body.containerCmd) {
+    if (req.body.containerCmd != "") {
       options.Cmd = ['/bin/bash', '-c', req.body.containerCmd];
       console.log(options)
       docker.createContainer(options, function (err, container) {
@@ -87,7 +90,7 @@ var returnContainersRouter = function (io) {
         AttachStdout: true,
         AttachStderr: true,
         Tty: true,
-        Cmd: ['/bin/bash'],
+        //Cmd: ['/bin/bash'],
         OpenStdin: false,
         StdinOnce: false
       };
