@@ -7,7 +7,7 @@ var favicon = require('serve-favicon');
 app.io = io;
 
 var index = require('./routes/index');
-var overview = require('./routes/overview');
+var overview = require('./routes/overview')(io);
 var containers = require('./routes/containers')(io);
 var images = require('./routes/images')(io);
 

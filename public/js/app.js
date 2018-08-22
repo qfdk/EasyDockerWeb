@@ -2,6 +2,9 @@ $(document).ready(function () {
     var codePageCourante = $("[data-page]").attr("data-page");
     $('#' + codePageCourante + 'Nav').addClass('active');
     loading();
+    if (codePageCourante == 'overview') {
+        getInfoContainer();
+    }
     if (codePageCourante == 'terminal') {
         terminal();
     }
@@ -53,6 +56,20 @@ function terminal() {
     socket.on('end', (status) => {
         $('#terminal').empty();
         socket.disconnect();
+    });
+}
+
+function getInfoContainer() {
+    // var id = window.location.pathname.split('/')[3];
+    var host = window.location.origin;
+    var socket = io.connect(host);
+    socket.emit('getCPU', "7b0edccd2b24e2cb04f3b91c7fd3bb5bb2f9f5d8ab6a9a0de0b836474e9046ba");
+    socket.on('cpu', (data) => {
+        console.log(data);
+    });
+
+    socket.on('end', (status) => {
+        console.log("end")
     });
 }
 
