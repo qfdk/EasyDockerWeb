@@ -14,6 +14,7 @@
                     <th>Command</th>
                     <th>Port</th>
                     <th>State</th>
+                    <th>CPU</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -50,6 +51,7 @@
                                     <span class="label label-warning btn-xs"><%= container.State %></span>
                                 <% } %>
                             </td>
+                            <td class="container-cpu" container-id="<%= container.Id %>">No data</td>
                             <td>
                                 <% if(container.State=='running'){ %>
                                     <a class="btn btn-warning btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/stop/<%= container.Id %>">
@@ -132,8 +134,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button id="create" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="create" type="submit" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." class="btn btn-primary">Confirm</button>
                 </div>
             </form>
         </div>

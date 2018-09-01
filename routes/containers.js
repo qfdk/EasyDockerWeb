@@ -186,7 +186,24 @@ var returnContainersRouter = function (io) {
       }
       container.logs(logs_opts, handler);
     });
+
+    socket.on('getCPU', function (id) {
+      var container = docker.getContainer(id);
+      container.stats(function (err, stream) {
+        if (!err && stream != null) {
+          stream.on('data', function (data) {
+            socket.emit(id, data.toString('utf8'));
+          });
+
+          stream.on('end', function () {
+            socket.emit('end', 'ended');
+            stream.destroy();
+          });
+        }
+      });
+    });
   });
+
 
   return router;
 }

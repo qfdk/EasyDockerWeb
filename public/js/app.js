@@ -3,7 +3,10 @@ $(document).ready(function () {
     $('#' + codePageCourante + 'Nav').addClass('active');
     loading();
     if (codePageCourante == 'overview') {
-        getInfoContainer();
+    }
+
+    if (codePageCourante == 'containers') {
+        getContainersCPU();
     }
     if (codePageCourante == 'terminal') {
         terminal();
@@ -59,17 +62,24 @@ function terminal() {
     });
 }
 
-function getInfoContainer() {
-    // var id = window.location.pathname.split('/')[3];
+function getContainersCPU() {
+    var containers = $('.container-cpu');
+    for (var i = 0; i < containers.length; i++) {
+        var containerId = $('.container-cpu').eq(i).attr('container-id')
+        getContainerCPUInfoById(containerId);
+    }
+}
+
+function getContainerCPUInfoById(id) {
     var host = window.location.origin;
     var socket = io.connect(host);
-    socket.emit('getCPU', "7b0edccd2b24e2cb04f3b91c7fd3bb5bb2f9f5d8ab6a9a0de0b836474e9046ba");
-    socket.on('cpu', (data) => {
-        console.log(data);
+    socket.emit('getCPU', id);
+    socket.on(id, (data) => {
+        var res = calculateCPUPercentUnix(JSON.parse(data));
+        $('.container-cpu[container-id=' + id + ']').text(res + ' %');
     });
-
     socket.on('end', (status) => {
-        console.log("end")
+        console.log("[END] getContainerCPUInfoById");
     });
 }
 
@@ -133,6 +143,19 @@ function pullIamges() {
         socket.disconnect();
         location.reload();
     });
+}
+
+// ref https://github.com/moby/moby/issues/29306
+function calculateCPUPercentUnix(json) {
+    var previousCPU = json.precpu_stats.cpu_usage.total_usage;
+    var previousSystem = json.precpu_stats.system_cpu_usage;
+    var cpuPercent = 0.0
+    var cpuDelta = parseInt(json.cpu_stats.cpu_usage.total_usage) - parseInt(previousCPU)
+    var systemDelta = parseInt(json.cpu_stats.system_cpu_usage) - parseInt(previousSystem)
+    if (systemDelta > 0.0 && cpuDelta > 0.0) {
+        cpuPercent = (cpuDelta / systemDelta) * parseInt(json.cpu_stats.cpu_usage.percpu_usage.length) * 100.0
+    }
+    return new Number(cpuPercent).toFixed(2);
 }
 
 function loading() {
