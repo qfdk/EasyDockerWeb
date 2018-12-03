@@ -1,88 +1,88 @@
 <% include include/header.html %>
-    <div class="col-md-12">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New container
-        </button>
-    </div>
-    <hr>
-    <div class="col-md-12" data-page="containers">
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>Names</th>
-                    <th>Image</th>
-                    <th>Command</th>
-                    <th>Port</th>
-                    <th>State</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if(containers){ %>
-                    <% containers.forEach(function(container,index){ %>
-                        <tr>
-                            <td>
-                                <%= formatName(container.Names) %>
-                            </td>
-                            <td>
-                                <%= container.Image %>
-                            </td>
-                            <td>
-                                <%= container.Command %>
-                            </td>
-                            <td>
-                                <% if(container.Ports[0]){ %>
-                                    [TCP]
-                                    <%= container.Ports[0].PrivatePort %>
-                                    <% if(container.Ports[0].PublicPort){ %>
-                                        -> <%= container.Ports[0].PublicPort %>
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New container
+            </button>
+            <hr>
+        </div>
+        <div class="col-md-12" data-page="containers">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Names</th>
+                        <th>Image</th>
+                        <th>Command</th>
+                        <th>Port</th>
+                        <th>State</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(containers){ %>
+                        <% containers.forEach(function(container,index){ %>
+                            <tr>
+                                <td>
+                                    <%= formatName(container.Names) %>
+                                </td>
+                                <td>
+                                    <%= container.Image %>
+                                </td>
+                                <td>
+                                    <%= container.Command %>
+                                </td>
+                                <td>
+                                    <% if(container.Ports[0]){ %>
+                                        [TCP]
+                                        <%= container.Ports[0].PrivatePort %>
+                                        <% if(container.Ports[0].PublicPort){ %>
+                                            -> <%= container.Ports[0].PublicPort %>
+                                        <% } %>
                                     <% } %>
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if(container.State=='running'){ %>
-                                    <span class="label label-success btn-xs"><%= container.State %></span>
-                                <% } %>
-                                <% if(container.State=='exited'){ %>
-                                    <span class="label label-danger btn-xs"><%= container.State %></span>
-                                <% } %>
-                                <% if(container.State=='created'){ %>
-                                    <span class="label label-warning btn-xs"><%= container.State %></span>
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if(container.State=='running'){ %>
-                                    <a class="btn btn-warning btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/stop/<%= container.Id %>">
-                                        <span class="glyphicon glyphicon-stop"></span> Stop
-                                    </a>
-                                    <a class="btn btn-primary btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/console/<%= container.Id %>">
-                                       <span class="glyphicon glyphicon-console"></span> Console
-                                    </a>
-                                <% } %>
-                                <% if(container.State=='exited'){ %>
-                                    <a class="btn btn-success btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/start/<%= container.Id %>">
-                                        <span class="glyphicon glyphicon-play"></span> Start
-                                    </a>
-                                    <a class="btn btn-danger btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/remove/<%= container.Id %>">
-                                        <span class="glyphicon glyphicon-trash"></span> Remove
-                                    </a>
-                                <% } %>
-                                <% if(container.State=='created'){ %>
-                                    <a class="btn btn-danger btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/remove/<%= container.Id %>">
-                                        <span class="glyphicon glyphicon-trash"></span> Remove
-                                    </a>
-                                <% } %>
-                                    <a class="btn btn-info btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/logs/<%= container.Id %>">
-                                        <span class="glyphicon glyphicon-comment"></span> Logs
-                                    </a>
-                            </td>
-                        </tr>
-                        <% }) %>
+                                </td>
+                                <td>
+                                    <% if(container.State=='running'){ %>
+                                        <span class="label label-success btn-xs"><%= container.State %></span>
+                                    <% } %>
+                                    <% if(container.State=='exited'){ %>
+                                        <span class="label label-danger btn-xs"><%= container.State %></span>
+                                    <% } %>
+                                    <% if(container.State=='created'){ %>
+                                        <span class="label label-warning btn-xs"><%= container.State %></span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if(container.State=='running'){ %>
+                                        <a class="btn btn-warning btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/stop/<%= container.Id %>">
+                                            <span class="glyphicon glyphicon-stop"></span> Stop
+                                        </a>
+                                        <a class="btn btn-primary btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/console/<%= container.Id %>">
+                                        <span class="glyphicon glyphicon-console"></span> Console
+                                        </a>
+                                    <% } %>
+                                    <% if(container.State=='exited'){ %>
+                                        <a class="btn btn-success btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/start/<%= container.Id %>">
+                                            <span class="glyphicon glyphicon-play"></span> Start
+                                        </a>
+                                        <a class="btn btn-danger btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/remove/<%= container.Id %>">
+                                            <span class="glyphicon glyphicon-trash"></span> Remove
+                                        </a>
+                                    <% } %>
+                                    <% if(container.State=='created'){ %>
+                                        <a class="btn btn-danger btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/remove/<%= container.Id %>">
+                                            <span class="glyphicon glyphicon-trash"></span> Remove
+                                        </a>
+                                    <% } %>
+                                        <a class="btn btn-info btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/logs/<%= container.Id %>">
+                                            <span class="glyphicon glyphicon-comment"></span> Logs
+                                        </a>
+                                </td>
+                            </tr>
+                            <% }) %>
 
-                            <% } %>
-            </tbody>
-        </table>
-    </div>
+                                <% } %>
+                </tbody>
+            </table>
+        </div>
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
