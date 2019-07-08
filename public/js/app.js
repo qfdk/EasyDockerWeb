@@ -7,6 +7,7 @@ $(document).ready(function () {
 
     if (codePageCourante == 'containers') {
         getContainersCPU();
+        getContainersRAM();
     }
     if (codePageCourante == 'terminal') {
         terminal();
@@ -70,16 +71,43 @@ function getContainersCPU() {
     }
 }
 
+function getContainersRAM() {
+    var containers = $('.container-cpu');
+    for (var i = 0; i < containers.length; i++) {
+        var containerId = $('.container-ram').eq(i).attr('container-id')
+        getContainerRAMInfoById(containerId);
+    }
+}
+
 function getContainerCPUInfoById(id) {
     var host = window.location.origin;
     var socket = io.connect(host);
-    socket.emit('getCPU', id);
+    socket.emit('getSysInfo', id);
     socket.on(id, (data) => {
-        var res = calculateCPUPercentUnix(JSON.parse(data));
-        $('.container-cpu[container-id=' + id + ']').text(res + ' %');
+        var json = JSON.parse(data);
+        var res = calculateCPUPercentUnix(json);
+        if (json.precpu_stats.system_cpu_usage) {
+            $('.container-cpu[container-id=' + id + ']').text(res + ' %');
+        }
     });
     socket.on('end', (status) => {
         console.log("[END] getContainerCPUInfoById");
+    });
+}
+
+function getContainerRAMInfoById(id) {
+    var host = window.location.origin;
+    var socket = io.connect(host);
+    socket.emit('getSysInfo', id);
+    socket.on(id, (data) => {
+        var json = JSON.parse(data);
+        if (json.memory_stats.usage) {
+            var tmp = ((json.memory_stats.usage / json.memory_stats.limit) * 100).toFixed(2)
+            $('.container-ram[container-id=' + id + ']').text(tmp + ' %');
+        }
+    });
+    socket.on('end', (status) => {
+        console.log("[END] getContainerRAMInfoById");
     });
 }
 

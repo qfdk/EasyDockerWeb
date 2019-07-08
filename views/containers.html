@@ -15,6 +15,7 @@
                     <th>Port</th>
                     <th>State</th>
                     <th>CPU</th>
+                    <th>RAM</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -52,6 +53,8 @@
                                 <% } %>
                             </td>
                             <td class="container-cpu" container-id="<%= container.Id %>">No data</td>
+                            <td class="container-ram" container-id="<%= container.Id %>">No data</td>
+
                             <td>
                                 <% if(container.State=='running'){ %>
                                     <a class="btn btn-warning btn-xs" data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..." href="/containers/stop/<%= container.Id %>">

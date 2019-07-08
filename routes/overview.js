@@ -7,7 +7,7 @@ var returnOverviewRouter = function (io) {
 
   router.get('/', function (req, res, next) {
     docker.info(function (err, info) {
-      console.log(info)
+      // console.log(info)
       if (err) {
         res.render('error', {
           message: "Docker is running ?"

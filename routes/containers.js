@@ -76,7 +76,7 @@ var returnContainersRouter = function (io) {
 
     if (req.body.containerCmd != "") {
       options.Cmd = ['/bin/bash', '-c', req.body.containerCmd];
-      console.log(options)
+      // console.log(options)
       docker.createContainer(options, function (err, container) {
         if (err) throw err
         container.start(function (err, data) {
@@ -187,14 +187,50 @@ var returnContainersRouter = function (io) {
       container.logs(logs_opts, handler);
     });
 
-    socket.on('getCPU', function (id) {
+    // var exp = {
+    //   "read": "0001-01-01T00:00:00Z",
+    //   "preread": "0001-01-01T00:00:00Z",
+    //   "pids_stats": {},
+    //   "blkio_stats": {
+    //     "io_service_bytes_recursive": null,
+    //     "io_serviced_recursive": null,
+    //     "io_queue_recursive": null,
+    //     "io_service_time_recursive": null,
+    //     "io_wait_time_recursive": null,
+    //     "io_merged_recursive": null,
+    //     "io_time_recursive": null,
+    //     "sectors_recursive": null
+    //   },
+    //   "num_procs": 0,
+    //   "storage_stats": {},
+    //   "cpu_stats": {
+    //     "cpu_usage": {
+    //       "total_usage": 0,
+    //       "usage_in_kernelmode": 0,
+    //       "usage_in_usermode": 0
+    //     },
+    //     "throttling_data": {
+    //       "periods": 0,
+    //       "throttled_periods": 0,
+    //       "throttled_time": 0
+    //     }
+    //   },
+    //   "precpu_stats": {
+    //     "cpu_usage": {
+    //       "total_usage": 0,
+    //       "usage_in_kernelmode": 0,
+    //       "usage_in_usermode": 0
+    //     }, "throttling_data": { "periods": 0, "throttled_periods": 0, "throttled_time": 0 }
+    //   }, "memory_stats": {}, "name": "/nervous_jang", "id": "ab61765a4d91bc6c68779508dfe75774da3717c539f9d9b5002379c83939c7e7"
+    // }
+
+    socket.on('getSysInfo', function (id) {
       var container = docker.getContainer(id);
       container.stats(function (err, stream) {
         if (!err && stream != null) {
           stream.on('data', function (data) {
             socket.emit(id, data.toString('utf8'));
           });
-
           stream.on('end', function () {
             socket.emit('end', 'ended');
             stream.destroy();
@@ -202,6 +238,8 @@ var returnContainersRouter = function (io) {
         }
       });
     });
+
+
   });
 
 
