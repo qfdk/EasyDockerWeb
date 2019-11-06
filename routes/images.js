@@ -38,10 +38,16 @@ var returnImagesRouter = function (io) {
   });
 
   router.get('/remove/:id', function (req, res, next) {
-    var image = docker.getImage(req.params.id);
+    var imageId = req.params.id;
+    if (imageId.indexOf(":") > 0) {
+      imageId = imageId.split(":")[1];
+    }
+    var image = docker.getImage(imageId);
     image.remove({ force: true }, function (err, data) {
       if (!err) {
         res.redirect('/images');
+      } else {
+        console.error(err.json.message);
       }
     });
   });
@@ -56,11 +62,15 @@ var returnImagesRouter = function (io) {
   io.on('connection', function (socket) {
     socket.on('pull', function (imageName, w, h) {
       docker.pull(imageName, function (err, stream) {
-        if (err) return done(err);
+        if (err) {
+          console.error(err);
+        }
         docker.modem.followProgress(stream, onFinished, onProgress);
 
         function onFinished(err, output) {
-          if (err) return done(err);
+          if (err) {
+            console.error(err);
+          }
           socket.emit('end');
         }
 
