@@ -25,6 +25,7 @@ cd EasyDockerWeb
 npm i 
 npm start
 ```
+## 中文
 
 ## Build your docker image
 
