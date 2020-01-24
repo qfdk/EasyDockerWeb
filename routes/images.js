@@ -63,27 +63,32 @@ var returnImagesRouter = function (io) {
     socket.on('pull', function (imageName, w, h) {
       docker.pull(imageName, function (err, stream) {
         if (err) {
-          console.error(err);
-        }
-        docker.modem.followProgress(stream, onFinished, onProgress);
+          const tmp = err.toString();
+          socket.emit('show', tmp);
+          setTimeout(() => {
+            socket.emit('end');
+          }, 10000);
+        } else {
+          docker.modem.followProgress(stream, onFinished, onProgress);
+          function onFinished(err, output) {
+            if (err) {
+              console.log(err);
+            }
+            socket.emit('end');
+          }
 
-        function onFinished(err, output) {
-          if (err) {
-            console.error(err);
+          function onProgress(event) {
+            if (event.id) {
+              socket.emit('show', event.status + ':' + event.id + '\n');
+            } else {
+              socket.emit('show', event.status + '\n');
+            }
+            if (event.progress) {
+              socket.emit('show', event.progress + '\n');
+            }
           }
-          socket.emit('end');
         }
 
-        function onProgress(event) {
-          if (event.id) {
-            socket.emit('show', event.status + ':' + event.id + '\n');
-          } else {
-            socket.emit('show', event.status + '\n');
-          }
-          if (event.progress) {
-            socket.emit('show', event.progress + '\n');
-          }
-        }
       });
     });
   });
