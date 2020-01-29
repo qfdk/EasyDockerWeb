@@ -1,14 +1,22 @@
 import {Layout, Menu, Icon} from 'antd';
 import './index.less'
 import React, {Component} from "react";
-import {adminRouter} from "../../routes";
+// import {adminRouter} from "../../routes";
 
 import {withRouter} from 'react-router-dom'
 
-const {Header, Content, Sider} = Layout;
+const {Header, Content, Sider, Footer} = Layout;
 
 @withRouter
 class Frame extends Component {
+    state = {
+        collapsed: false,
+    };
+
+    onCollapse = collapsed => {
+        this.setState({collapsed});
+    };
+
     onMenuClick = ({item, key, keyPath, doEvent}) => {
         this.props.history.push(key);
     }
@@ -22,32 +30,35 @@ class Frame extends Component {
                     </div>
                 </Header>
                 <Layout>
-                    <Sider width={200} style={{background: '#fff'}}>
+                    <Sider width={200} collapsible collapsed={this.state.collapsed}
+                           style={{marginTop: "4px"}}
+                           onCollapse={this.onCollapse}>
                         <Menu
                             mode="inline"
+                            theme="dark"
                             selectedKeys={[this.props.location.pathname]}
                             onClick={this.onMenuClick}
                             style={{height: '100%', borderRight: 0}}
                         >
                             {
                                 this.props.menus.map(menu => {
-                                    return <Menu.Item key={menu.pathname}><Icon type={menu.icon}/> {menu.title}
+                                    return <Menu.Item key={menu.pathname}><Icon type={menu.icon}/>
+                                        <span>{menu.title}</span>
                                     </Menu.Item>
                                 })
                             }
                         </Menu>
                     </Sider>
-                    <Layout style={{padding: '16px'}}>
+                    <Layout style={{padding: '4px 16px 0 16px'}}>
                         <Content
                             style={{
                                 background: '#fff',
-                                padding: 24,
                                 margin: 0,
-                                minHeight: 480,
                             }}
                         >
                             {this.props.children}
                         </Content>
+                        <Footer style={{textAlign: 'center'}}>NASI TECH ©2020 Created by qfdk</Footer>
                     </Layout>
                 </Layout>
             </Layout>

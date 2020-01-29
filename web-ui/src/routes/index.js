@@ -1,5 +1,6 @@
 import {
     Dashboard,
+    Containers,
     Login,
     NotFound,
     Settings,
@@ -27,14 +28,21 @@ export const adminRouter = [
         pathname: '/admin/dashboard',
         component: Dashboard,
         isNave: true,
-        title: '仪表盘',
+        title: 'Dashboard',
         icon: 'dashboard'
+    },
+    {
+        pathname: '/admin/containers',
+        component: Containers,
+        isNave: true,
+        title: 'Containers',
+        icon: 'container'
     },
     {
         pathname: '/admin/settings',
         component: Settings,
         isNave: true,
-        title: '设置',
+        title: 'Settings',
         icon: 'setting',
         exact: true
     }

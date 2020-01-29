@@ -7,6 +7,11 @@ const Dashboard = Loadable({
     loading: Loading
 })
 
+const Containers = Loadable({
+    loader: () => import('./Containers'),
+    loading: Loading
+})
+
 const NotFound = Loadable({
     loader: () => import('./NotFound'),
     loading: Loading
@@ -23,10 +28,12 @@ const Settings = Loadable({
     loader: () => import('./Settings'),
     loading: Loading
 })
+
 export {
     Dashboard,
-    Settings,
-    NotFound,
+    Containers,
     Login,
+    NotFound,
+    Settings,
     Admin
 }
