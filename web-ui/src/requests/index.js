@@ -26,3 +26,13 @@ export const getInfoOverView = () => {
 export const getContainers = () => {
     return service.get("/api/containers");
 };
+
+export const getStartContainerById = (id) => {
+    return service.get("/api/containers/start/" + id);
+};
+export const getStopContainerById = (id) => {
+    return service.get("/api/containers/stop/" + id);
+};
+export const getDeleteContainerById = (id) => {
+    return service.get("/api/containers/remove/" + id);
+};

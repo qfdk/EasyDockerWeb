@@ -26,4 +26,55 @@ router.get('/containers', function (req, res, next) {
   });
 });
 
+router.get('/containers/start/:id', function (req, res, next) {
+  var container = docker.getContainer(req.params.id);
+  container.start(function (err, data) {
+   if(!err){
+     res.json({
+       code:200,
+       msg:'OK'
+     })
+   }else{
+     res.json({
+       code:400,
+       msg:err.toString()
+     })
+   }
+  });
+});
+
+router.get('/containers/stop/:id', function (req, res, next) {
+  var container = docker.getContainer(req.params.id);
+  container.stop(function (err, data) {
+   if(!err){
+     res.json({
+       code:200,
+       msg:'OK'
+     })
+   }else{
+     res.json({
+       code:400,
+       msg:err.toString()
+     })
+   }
+  });
+});
+
+router.get('/containers/remove/:id', function (req, res, next) {
+  var container = docker.getContainer(req.params.id);
+  container.remove({ force: true }, function (err, data) {
+   if(!err){
+     res.json({
+       code:200,
+       msg:'OK'
+     })
+   }else{
+     res.json({
+       code:400,
+       msg:err.toString()
+     })
+   }
+  });
+});
+
 module.exports = router;
