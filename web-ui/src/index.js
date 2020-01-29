@@ -29,6 +29,5 @@ const myRouter = (
     </Router>
 );
 
-ReactDOM.render(myRouter
-    , document.getElementById('root'));
+ReactDOM.render(myRouter, document.getElementById('root'));
 

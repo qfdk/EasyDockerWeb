@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {Card, Col, Row, Tag} from "antd";
+import {Button, Card, Col, message, Row, Tag} from "antd";
 
-import {getInfo} from "../../requests";
+import {getInfoOverView} from "../../requests";
 
 const cardTitleStyle = {"background": "#1890ff", color: "white"};
 
@@ -25,7 +25,7 @@ class Dashboard extends Component {
     }
 
     componentDidMount() {
-        getInfo().then(resp => {
+        getInfoOverView().then(resp => {
             if (resp) {
                 this.setState({
                     "OperatingSystem": resp.OperatingSystem,
@@ -39,6 +39,8 @@ class Dashboard extends Component {
                     "Images": resp.Images
                 })
             }
+        }).catch(function (e) {
+            message.error(e.toString());
         });
     }
 
@@ -70,7 +72,9 @@ class Dashboard extends Component {
                 </Row>
                 <Row gutter={8} style={{"marginTop": "12px"}}>
                     <Col span={12}>
-                        <Card title="Containers" bordered={true} headStyle={containersTitleStyle}>
+                        <Card bordered={true} headStyle={containersTitleStyle}
+                              cover={<Button type="primary" href="/#/admin/containers">Containers</Button>}
+                        >
                             Stopped: <Tag color="#f50">{this.state.ContainersStopped}</Tag>
                             Paused: <Tag color="orange">{this.state.ContainersPaused}</Tag>
                             Running: <Tag color="#87d068">{this.state.ContainersRunning}</Tag>
@@ -78,8 +82,9 @@ class Dashboard extends Component {
                         </Card>
                     </Col>
                     <Col span={12}>
-                        <Card title="Images" bordered={true} headStyle={containersTitleStyle}>
-                            {this.state.Images}
+                        <Card bordered={true} headStyle={containersTitleStyle}
+                              cover={<Button type="primary" href="/#/admin/settings">Images</Button>}
+                        >                            {this.state.Images}
                         </Card>
                     </Col>
                 </Row>

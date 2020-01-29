@@ -20,19 +20,6 @@ var returnOverviewRouter = function (io) {
     });
   });
 
-  router.get('/api/info', function (req, res, next) {
-    docker.info(function (err, info) {
-      // console.log(info)
-      if (err) {
-        res.json( {
-          msg:"error",
-          message: "Docker is running ?"
-        });
-      } else {
-        res.json(info);
-      }
-    });
-  });
   return router;
 }
 

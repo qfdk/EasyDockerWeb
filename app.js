@@ -7,6 +7,7 @@ var favicon = require('serve-favicon');
 app.io = io;
 
 var index = require('./routes/index');
+var api = require('./routes/api');
 var overview = require('./routes/overview')(io);
 var containers = require('./routes/containers')(io);
 var images = require('./routes/images')(io);
@@ -27,7 +28,6 @@ app.all('*',function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-
   if (req.method == 'OPTIONS') {
     res.send(200); /让options请求快速返回/
   }
@@ -37,6 +37,7 @@ app.all('*',function (req, res, next) {
 });
 
 app.use('/', index);
+app.use('/api', api);
 app.use('/overview', overview);
 app.use('/containers', containers);
 app.use('/images', images);

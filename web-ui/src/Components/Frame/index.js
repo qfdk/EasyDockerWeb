@@ -19,7 +19,7 @@ class Frame extends Component {
 
     onMenuClick = ({item, key, keyPath, doEvent}) => {
         this.props.history.push(key);
-    }
+    };
 
     render() {
         return (
