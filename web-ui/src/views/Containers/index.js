@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Card, Table, Button, message, Tag, Icon} from 'antd';
+import {Button, Card, Icon, message, Table, Tag} from 'antd';
 import {getContainers, getDeleteContainerById, getStartContainerById, getStopContainerById} from "../../requests";
 import ButtonGroup from "antd/es/button/button-group";
 
@@ -187,6 +187,11 @@ class Containers extends Component {
     render() {
         return (
             <Card title="Containers" bordered={false}>
+                <Button type="primary">
+                    <Icon type="plus" />
+                    New container
+                </Button>
+                <br/>
                 <Table dataSource={this.state.dataSource}
                        loading={this.state.isLoading}
                        columns={this.columns}/>

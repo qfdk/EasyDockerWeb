@@ -108,6 +108,11 @@ class Images extends Component {
     render() {
         return (
             <Card title="Images" bordered={false}>
+                <Button type="primary">
+                    <Icon type="plus" />
+                    New images
+                </Button>
+                <br/>
                 <Table
                     dataSource={this.state.dataSource}
                     loading={this.state.isLoading}
