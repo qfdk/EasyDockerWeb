@@ -36,3 +36,7 @@ export const getStopContainerById = (id) => {
 export const getDeleteContainerById = (id) => {
     return service.get("/api/containers/remove/" + id);
 };
+
+export const getImages = () => {
+    return service.get("/api/images");
+};

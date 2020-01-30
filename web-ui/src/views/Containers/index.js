@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Card, Table, Button, message, Tag, Icon} from 'antd';
 import {getContainers, getDeleteContainerById, getStartContainerById, getStopContainerById} from "../../requests";
-import logger from "less/lib/less/logger";
 import ButtonGroup from "antd/es/button/button-group";
 
 const stateColorMap = {
@@ -61,7 +60,7 @@ class Containers extends Component {
                         <Button size="small" type="dashed"
                                 loading={record.stopLoading}
                                 onClick={() => this.stopContainerHandler(record.key)}>
-                            <Icon type="stop" />
+                            <Icon type="stop"/>
                         </Button>
                         <Button size="small" type="danger"
                                 loading={record.deleteLoading}

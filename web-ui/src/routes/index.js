@@ -6,6 +6,7 @@ import {
     Settings,
     Admin
 } from '../views'
+import Images from "../views/Images";
 
 export const mainRouter =
     [
@@ -37,6 +38,13 @@ export const adminRouter = [
         isNave: true,
         title: 'Containers',
         icon: 'container'
+    },
+    {
+        pathname: '/admin/images',
+        component: Images,
+        isNave: true,
+        title: 'Images',
+        icon: 'database'
     },
     {
         pathname: '/admin/settings',
