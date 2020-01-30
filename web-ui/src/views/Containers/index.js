@@ -55,10 +55,12 @@ class Containers extends Component {
                     <ButtonGroup>
                         <Button size="small" type="primary"
                                 loading={record.startLoading}
+                                disabled={record.State === 'running' ? true : false}
                                 onClick={() => this.startContainerHandler(record.key)}>
                             <Icon type="caret-right"/></Button>
                         <Button size="small" type="dashed"
                                 loading={record.stopLoading}
+                                disabled={record.State === 'exited' ? true : false}
                                 onClick={() => this.stopContainerHandler(record.key)}>
                             <Icon type="stop"/>
                         </Button>

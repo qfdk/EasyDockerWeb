@@ -21,13 +21,11 @@ class Images extends Component {
             key: 'operation',
             render: (text, record) => {
                 return (
-                    <ButtonGroup>
-                        <Button size="small" type="danger"
-                                onClick={() => this.deleteImagesHandler(record.key)}
-                                loading={record.deleteLoading}
-                        >
-                            <Icon type="delete"/></Button>
-                    </ButtonGroup>
+                    <Button size="small" type="danger"
+                            onClick={() => this.deleteImagesHandler(record.key)}
+                            loading={record.deleteLoading}
+                    >
+                        <Icon type="delete"/></Button>
                 )
 
             }
