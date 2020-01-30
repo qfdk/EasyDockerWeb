@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Card, Icon, message, Table, Tag} from 'antd';
+import {Button, Card, Icon, message, Modal, Table, Tag} from 'antd';
 import {getContainers, getDeleteContainerById, getStartContainerById, getStopContainerById} from "../../requests";
 import ButtonGroup from "antd/es/button/button-group";
 
@@ -79,7 +79,9 @@ class Containers extends Component {
         super(props);
         this.state = {
             dataSource: [],
-            isLoading: false
+            isLoading: false,
+            visible: false,
+            confirmLoading: false,
         }
     }
 
@@ -93,26 +95,36 @@ class Containers extends Component {
         });
         getContainers().then(response => {
             const tmp = response.map(res => {
+                const ports = res.Ports.map(p => {
+                    let tmp = '';
+                    if (p.IP) {
+                        tmp = " -> " + p.IP + ":" + p.PublicPort
+                    }
+                    return "[" + p.Type + "] " + p.PrivatePort + tmp + "; ";
+                });
                 return {
                     key: res.Id,
                     Names: res.Names[0].split("/")[1],
                     Image: res.Image,
-                    Ports: res.Ports[0] ? res.Ports[0].Type + ": " + res.Ports[0].PrivatePort + " -> " + res.Ports[0].IP + ":" + res.Ports[0].PublicPort : '',
-                    State: res.State
-                }
-            });
-
-            const listStateMap = tmp.map(res => {
-                return Object.assign({}, {
+                    Ports: ports,
+                    State: res.State,
                     startLoading: false,
                     stopLoading: false,
                     deleteLoading: false
-                }, res);
+                }
             });
+
+            // const listStateMap = tmp.map(res => {
+            //     return Object.assign({}, {
+            //         startLoading: false,
+            //         stopLoading: false,
+            //         deleteLoading: false
+            //     }, res);
+            // });
             if (response) {
                 this.setState(
                     {
-                        dataSource: listStateMap
+                        dataSource: tmp
                     }
                 )
             }
@@ -184,18 +196,52 @@ class Containers extends Component {
         });
     }
 
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+
+    handleOk = () => {
+        this.setState({
+            confirmLoading: true,
+        });
+        setTimeout(() => {
+            this.setState({
+                visible: false,
+                confirmLoading: false,
+            });
+        }, 2000);
+    };
+
+    handleCancel = () => {
+        console.log('Clicked cancel button');
+        this.setState({
+            visible: false,
+        });
+    };
+
     render() {
         return (
             <Card title="Containers" bordered={false}>
-                <Button type="primary">
-                    <Icon type="plus" />
+                <Button type="primary" style={{marginBottom: '8px'}} onClick={this.showModal}>
+                    <Icon type="plus"/>
                     New container
                 </Button>
-                <br/>
                 <Table dataSource={this.state.dataSource}
                        loading={this.state.isLoading}
                        columns={this.columns}/>
+                <Modal
+                    title="New container"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    confirmLoading={this.confirmLoading}
+                    onCancel={this.handleCancel}
+                >
+                   <p>test</p>
+                </Modal>
             </Card>
+
         );
     }
 }

@@ -108,7 +108,7 @@ class Images extends Component {
     render() {
         return (
             <Card title="Images" bordered={false}>
-                <Button type="primary">
+                <Button type="primary" style={{marginBottom: '8px'}}>
                     <Icon type="plus" />
                     New images
                 </Button>
