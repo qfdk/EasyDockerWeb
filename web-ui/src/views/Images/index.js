@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Button, Card, Icon, message, Table} from "antd";
-import ButtonGroup from "antd/es/button/button-group";
 import {getDeleteImagesById, getImages} from "../../requests";
 
 class Images extends Component {
