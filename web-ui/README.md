@@ -1,4 +1,14 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Web UI react.js
+
+
+## Steps
+
+- using `npm start` in parent projet to lancer api
+- `yarn start` here, web ui in react.
+
+## 中文
+- 在上级目录启用api
+- 本目录运行 后端界面
 
 ## Available Scripts
 
@@ -11,11 +21,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `yarn build`
 

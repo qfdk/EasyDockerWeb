@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Card, Table, Button, message, Tag} from 'antd';
+import {Card, Table, Button, message, Tag, Icon} from 'antd';
 import {getContainers, getDeleteContainerById, getStartContainerById, getStopContainerById} from "../../requests";
 import logger from "less/lib/less/logger";
 import ButtonGroup from "antd/es/button/button-group";
@@ -55,14 +55,18 @@ class Containers extends Component {
                 return (
                     <ButtonGroup>
                         <Button size="small" type="primary"
-                                // loading={this.state.startLoading}
-                                onClick={() => this.startContainerHandler(record.key)}>Start</Button>
+                                loading={record.startLoading}
+                                onClick={() => this.startContainerHandler(record.key)}>
+                            <Icon type="caret-right"/></Button>
                         <Button size="small" type="dashed"
-                                // loading={this.state.stopLoading}
-                                onClick={() => this.stopContainerHandler(record.key)}>Stop</Button>
+                                loading={record.stopLoading}
+                                onClick={() => this.stopContainerHandler(record.key)}>
+                            <Icon type="stop" />
+                        </Button>
                         <Button size="small" type="danger"
-                                // loading={this.state.deleteLoading}
-                                onClick={() => this.deleteContainerHandler(record.key)}>Delete</Button>
+                                loading={record.deleteLoading}
+                                onClick={() => this.deleteContainerHandler(record.key)}>
+                            <Icon type="delete"/></Button>
                     </ButtonGroup>
                 )
 
@@ -74,10 +78,7 @@ class Containers extends Component {
         super(props);
         this.state = {
             dataSource: [],
-            isLoading: false,
-            startLoading: false,
-            stopLoading: false,
-            deleteLoading: false
+            isLoading: false
         }
     }
 
@@ -99,10 +100,18 @@ class Containers extends Component {
                     State: res.State
                 }
             });
+
+            const listStateMap = tmp.map(res => {
+                return Object.assign({}, {
+                    startLoading: false,
+                    stopLoading: false,
+                    deleteLoading: false
+                }, res);
+            });
             if (response) {
                 this.setState(
                     {
-                        dataSource: tmp
+                        dataSource: listStateMap
                     }
                 )
             }
@@ -117,61 +126,62 @@ class Containers extends Component {
 
     startContainerHandler(id) {
         console.log("startContainerHandler: " + id);
-        this.setState({
-            isLoading: true,
-            startLoading: true
-        });
+        this.updateStateByKey(id, "startLoading", true);
         getStartContainerById(id).then(resp => {
             // update
             this.updateContainerList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            this.setState({
-                isLoading: false,
-                startLoading: false
-            })
+            this.updateStateByKey(id, "startLoading", false);
         })
     }
 
     stopContainerHandler(id) {
         console.log("stopContainerHandler: " + id);
-        this.setState({
-            isLoading: true,
-            stopLoading: true
-        });
+        this.updateStateByKey(id, "stopLoading", true);
         getStopContainerById(id).then(resp => {
             // update
             this.updateContainerList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            this.setState({
-                isLoading: false,
-                stopLoading: false
-            })
+            this.updateStateByKey(id, "stopLoading", false);
         })
     }
 
     deleteContainerHandler(id) {
         console.log("deleteContainerHandler: " + id);
-        this.setState({
-            isLoading: true,
-            deleteLoading: true
-        });
+        this.updateStateByKey(id, "deleteLoading", true);
+
         getDeleteContainerById(id).then(resp => {
             // update
             this.updateContainerList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            this.setState({
-                isLoading: false,
-                deleteLoading: false
-            })
+            this.updateStateByKey(id, "deleteLoading", false);
         })
     }
 
+    /*
+     * id id
+     * type stop start delete
+     * is active
+     */
+    updateStateByKey(id, type, isActive) {
+        const newMapToUpdate = this.state.dataSource.map((data) => {
+            if (data.key === id) {
+                data[type] = isActive;
+            }
+            return data;
+        });
+
+        this.setState({
+            loading: isActive,
+            dataSource: newMapToUpdate
+        });
+    }
 
     render() {
         return (
