@@ -83,7 +83,7 @@ class Dashboard extends Component {
                     </Col>
                     <Col span={12}>
                         <Card bordered={true} headStyle={containersTitleStyle}
-                              cover={<Button type="primary" href="/#/admin/settings">Images</Button>}
+                              cover={<Button type="primary" href="/#/admin/images">Images</Button>}
                         >                            {this.state.Images}
                         </Card>
                     </Col>
