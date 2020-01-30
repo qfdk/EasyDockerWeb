@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Card, Icon, message, Table} from "antd";
 import ButtonGroup from "antd/es/button/button-group";
-import {getDeleteContainerById, getImages} from "../../requests";
+import {getDeleteImagesById, getImages} from "../../requests";
 
 class Images extends Component {
     columns = [
@@ -23,7 +23,9 @@ class Images extends Component {
                 return (
                     <ButtonGroup>
                         <Button size="small" type="danger"
-                                onClick={() => this.deleteImagesHandler(record.key)}>
+                                onClick={() => this.deleteImagesHandler(record.key)}
+                                loading={record.deleteLoading}
+                        >
                             <Icon type="delete"/></Button>
                     </ButtonGroup>
                 )
@@ -41,11 +43,14 @@ class Images extends Component {
     }
 
     componentDidMount() {
+        this.updateImagesList();
+    }
+
+    updateImagesList() {
         this.setState({
             isLoading: true
-        })
+        });
         getImages().then(response => {
-
             const map = response.map(res => {
                 return {
                     key: res.Id,
@@ -69,15 +74,29 @@ class Images extends Component {
 
     deleteImagesHandler(id) {
         console.log("deleteImagesHandler: " + id);
-        // this.updateStateByKey(id, "deleteLoading", true);
-        // getDeleteContainerById(id).then(resp => {
-        //     // update
-        //     this.updateContainerList()
-        // }).catch(err => {
-        //     message.error(err.toString());
-        // }).finally(() => {
-        //     this.updateStateByKey(id, "deleteLoading", false);
-        // })
+        this.updateStateByKey(id, "deleteLoading", true);
+        getDeleteImagesById(id).then(resp => {
+            // update
+            this.updateImagesList();
+        }).catch(err => {
+            message.error(err.toString());
+        }).finally(() => {
+            this.updateStateByKey(id, "deleteLoading", false);
+        })
+    }
+
+    updateStateByKey(id, type, isActive) {
+        const newMapToUpdate = this.state.dataSource.map((data) => {
+            if (data.key === id) {
+                data[type] = isActive;
+            }
+            return data;
+        });
+
+        this.setState({
+            loading: isActive,
+            dataSource: newMapToUpdate
+        });
     }
 
     getImageSize = (str) => {

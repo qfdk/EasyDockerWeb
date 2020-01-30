@@ -40,3 +40,6 @@ export const getDeleteContainerById = (id) => {
 export const getImages = () => {
     return service.get("/api/images");
 };
+export const getDeleteImagesById = (id) => {
+    return service.get("/api/images/remove/" + id);
+};

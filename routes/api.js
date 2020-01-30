@@ -77,35 +77,28 @@ router.get('/containers/remove/:id', function (req, res, next) {
   });
 });
 
-
-
 router.get('/images', function (req, res, next) {
   docker.listImages(function (err, listImages) {
-    res.locals.imageName = function (str) {
-      if (str) {
-        if (str.lenght != 0) {
-          return str[0].split(':')[0];
-        }
-      }
-      return str;
+    if(err){
+      res.json(err);
+    }else{
+      res.json(listImages);
     }
-    res.locals.imageTag = function (str) {
-      if (str) {
-        if (str.lenght != 0) {
-          return str[0].split(':')[1];
-        }
-      }
-      return str;
+  });
+});
+
+router.get('/images/remove/:id', function (req, res, next) {
+  var imageId = req.params.id;
+  if (imageId.indexOf(":") > 0) {
+    imageId = imageId.split(":")[1];
+  }
+  var image = docker.getImage(imageId);
+  image.remove({ force: true }, function (err, data) {
+    if(err){
+      res.json(err);
+    }else{
+      res.json(data);
     }
-    res.locals.imageSize = function (str) {
-      var newSiez = parseInt(str, 10);
-      var str = (newSiez / 1000 / 1000).toFixed(2).toString().substring(0, 4);
-      if (str.indexOf('.') == 3) {
-        return str.split('.')[0];
-      }
-      return str;
-    }
-    res.json(listImages);
   });
 });
 

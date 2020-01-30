@@ -7,7 +7,7 @@ const stateColorMap = {
     "running": "green",
     "exited": "red",
     "created": "yellow"
-}
+};
 
 
 class Containers extends Component {
