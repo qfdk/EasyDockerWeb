@@ -1,16 +1,19 @@
 import React, {Component} from 'react';
-import {Spin, Alert} from 'antd';
+import {Alert, Spin} from 'antd';
+import './loading.less'
 
 class Loading extends Component {
     render() {
         return (
-            <Spin tip="Loading..." size="large">
-                <Alert
-                    message="Loading..."
-                    description="Loading component please wait :)"
-                    type="info"
-                />
-            </Spin>
+            <div className="loading">
+                <Spin tip="Loading..." size="large">
+                    <Alert
+                        message="Loading..."
+                        description="Loading component please wait :)"
+                        type="info"
+                    />
+                </Spin>
+            </div>
         );
     }
 }

@@ -9,6 +9,7 @@ const stateColorMap = {
     "created": "yellow"
 };
 
+const socket = require('socket.io-client')('http://localhost:3000');
 
 class Containers extends Component {
 
@@ -36,16 +37,16 @@ class Containers extends Component {
                 return <Tag color={stateColorMap[record.State]}>{record.State}</Tag>
             }
         },
-        // {
-        //     title: 'CPU',
-        //     dataIndex: 'cpu',
-        //     key: 'cpu',
-        // },
-        // {
-        //     title: 'RAM',
-        //     dataIndex: 'ram',
-        //     key: 'ram',
-        // },
+        {
+            title: 'CPU',
+            dataIndex: 'cpu',
+            key: 'cpu',
+        },
+        {
+            title: 'RAM',
+            dataIndex: 'ram',
+            key: 'ram',
+        },
         {
             title: 'Operation',
             dataIndex: 'operation',
@@ -94,39 +95,37 @@ class Containers extends Component {
             isLoading: true
         });
         getContainers().then(response => {
-            const tmp = response.map(res => {
-                const ports = res.Ports.map(p => {
-                    let tmp = '';
-                    if (p.IP) {
-                        tmp = " -> " + p.IP + ":" + p.PublicPort
-                    }
-                    return "[" + p.Type + "] " + p.PrivatePort + tmp + "; ";
-                });
-                return {
-                    key: res.Id,
-                    Names: res.Names[0].split("/")[1],
-                    Image: res.Image,
-                    Ports: ports,
-                    State: res.State,
-                    startLoading: false,
-                    stopLoading: false,
-                    deleteLoading: false
-                }
-            });
-
-            // const listStateMap = tmp.map(res => {
-            //     return Object.assign({}, {
-            //         startLoading: false,
-            //         stopLoading: false,
-            //         deleteLoading: false
-            //     }, res);
-            // });
             if (response) {
+                const tmp = response.map(res => {
+                    const ports = res.Ports.map(p => {
+                        let tmp = '';
+                        if (p.IP) {
+                            tmp = " -> " + p.IP + ":" + p.PublicPort
+                        }
+                        return "[" + p.Type + "] " + p.PrivatePort + tmp + "; ";
+                    });
+                    return {
+                        key: res.Id,
+                        Names: res.Names[0].split("/")[1],
+                        Image: res.Image,
+                        Ports: ports,
+                        State: res.State,
+                        cpu: 0,
+                        ram: 0,
+                        startLoading: false,
+                        stopLoading: false,
+                        deleteLoading: false
+                    }
+                });
                 this.setState(
                     {
                         dataSource: tmp
                     }
-                )
+                );
+                tmp.forEach(container => {
+                    this.getContainerCPUInfoById(container.key);
+                    this.getContainerRAMInfoById(container.key);
+                })
             }
         }).catch(function (e) {
             message.error(e.toString());
@@ -221,6 +220,74 @@ class Containers extends Component {
         });
     };
 
+
+    getContainerRAMInfoById(id) {
+        socket.emit('getSysInfo', id);
+        socket.on(id, (data) => {
+            var json = JSON.parse(data);
+            if (json.memory_stats.usage) {
+                var tmp = ((json.memory_stats.usage / json.memory_stats.limit) * 100).toFixed(2)
+                this.updateStateById(id, tmp, 'ram');
+            }
+        });
+        socket.on('end', (status) => {
+            console.log("[END] getContainerRAMInfoById");
+        });
+    }
+
+    getContainerCPUInfoById(id) {
+        socket.emit('getSysInfo', id);
+        socket.on(id, (data) => {
+            var json = JSON.parse(data);
+            var res = this.calculateCPUPercentUnix(json);
+            if (json.precpu_stats.system_cpu_usage) {
+                this.updateStateById(id, res, 'cpu');
+            }
+        });
+        socket.on('end', (status) => {
+            console.log("[END] getContainerCPUInfoById");
+        });
+    }
+
+    // ref https://github.com/moby/moby/issues/29306
+    calculateCPUPercentUnix(json) {
+        const previousCPU = json.precpu_stats.cpu_usage.total_usage;
+        const previousSystem = json.precpu_stats.system_cpu_usage;
+        let cpuPercent = 0.0;
+        const cpuDelta = parseInt(json.cpu_stats.cpu_usage.total_usage) - parseInt(previousCPU);
+        const systemDelta = parseInt(json.cpu_stats.system_cpu_usage) - parseInt(previousSystem);
+        if (systemDelta > 0.0 && cpuDelta > 0.0) {
+            cpuPercent = (cpuDelta / systemDelta) * parseInt(json.cpu_stats.cpu_usage.percpu_usage.length) * 100.0
+        }
+        return Number(cpuPercent).toFixed(2);
+    }
+
+    updateStateById = (id, nb, type) => {
+        const containerIndex = this.state.dataSource.findIndex(container => {
+            return container.key === id;
+        });
+
+        const container = {
+            ...this.state.dataSource[containerIndex]
+        };
+
+        if (type === 'ram') {
+            container.ram = nb + " %";
+        }
+        if (type === 'cpu') {
+            container.cpu = nb + " %";
+        }
+
+        // copy of containers
+        const containers = [...this.state.dataSource];
+
+        containers[containerIndex] = container;
+
+        this.setState({
+            dataSource: containers
+        })
+    };
+
     render() {
         return (
             <Card title="Containers" bordered={false}>
@@ -238,7 +305,7 @@ class Containers extends Component {
                     confirmLoading={this.confirmLoading}
                     onCancel={this.handleCancel}
                 >
-                   <p>test</p>
+                    <p>test</p>
                 </Modal>
             </Card>
 
