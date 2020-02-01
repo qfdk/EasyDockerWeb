@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 
 import {adminRouter} from "./routes"
 import {Route, Switch, Redirect} from "react-router-dom"
-import {Frame} from "./Components"
+import {Frame} from "./components"
 
 class App extends Component {
 

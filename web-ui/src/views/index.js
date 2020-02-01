@@ -1,6 +1,6 @@
 import Loadable from 'react-loadable'
 
-import Loading from "../Components/Loading";
+import Loading from "../components/Loading";
 
 const Dashboard = Loadable({
     loader: () => import('./Dashboard'),
