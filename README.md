@@ -30,14 +30,14 @@ npm start
 
 ## TODO
 
-Refactoring by using react.js
+Refactoring by using react.js https://github.com/qfdk/EasyDockerWeb/tree/react
 
 ## 中文
 
 简单的 docker 管理程序，使用了express socket.io 来实现前后端通讯，代码有待优化。
 功能有待提升。
 
-- 计划使用react重构。
+- 计划使用react重构 https://github.com/qfdk/EasyDockerWeb/tree/react
 
 ## Build your owen docker image
 
