@@ -43,7 +43,7 @@ const Containers = () => {
             key: 'cpu',
             render: (text, record) => {
                 return (
-                    <p>{record.cpu ? record.cpu : null}</p>
+                    <p>{record.cpu ? record.cpu : '0.00 %'}</p>
                 )
             }
         },
@@ -53,7 +53,7 @@ const Containers = () => {
             key: 'ram',
             render: (text, record) => {
                 return (
-                    <p>{record.ram ? record.ram : null}</p>
+                    <p>{record.ram ? record.ram : '0.00 %'}</p>
                 )
             }
         },
@@ -103,7 +103,7 @@ const Containers = () => {
     useEffect(() => {
         if (socket) {
             socket.on('containerInfo', (data) => {
-                if (dataSource.length > 0) {
+                if (data.pids_stats.current && dataSource.length > 0) {
                     updateContainerState(data);
                 }
             });
@@ -265,7 +265,7 @@ const Containers = () => {
         // copy of containers
         const containers = [...dataSource];
         containers[containerIndex] = container;
-        // setDataSource(containers);
+        setDataSource(containers);
     };
 
     return (
