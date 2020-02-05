@@ -94,18 +94,21 @@ const Containers = () => {
 
     useEffect(() => {
         updateContainerList();
-        if (socket) {
-            socket.on('containerInfo', (data) => {
-                // console.log(data)
-                updateContainerState(data);
-            });
-        }
         return () => {
             socket.emit('end');
             socket.off('containerInfo');
         }
     }, []);
 
+    useEffect(() => {
+        if (socket) {
+            socket.on('containerInfo', (data) => {
+                if (dataSource.length > 0) {
+                    updateContainerState(data);
+                }
+            });
+        }
+    }, [dataSource.length]);
 
     const updateContainerList = (callback) => {
         setIsLoading(true);
@@ -257,12 +260,11 @@ const Containers = () => {
         container.ram = getContainerRAMInfo(data) ? getContainerRAMInfo(data) + " %" : "NO DATA";
         container.cpu = getContainerCPUInfo(data) ? getContainerCPUInfo(data) + " %" : "NO DATA";
 
-      //  console.log(container.ram, container.cpu);
+        //  console.log(container.ram, container.cpu);
 
         // copy of containers
         const containers = [...dataSource];
         containers[containerIndex] = container;
-
         // setDataSource(containers);
     };
 
