@@ -95,23 +95,16 @@ const Containers = () => {
     useEffect(() => {
         updateContainerList();
         if (socket) {
-            socket.on('end', (status) => {
-                console.log("[END]");
+            socket.on('containerInfo', (data) => {
+                // console.log(data)
+                updateContainerState(data);
             });
         }
-
         return () => {
             socket.emit('end');
+            socket.off('containerInfo');
         }
-
     }, []);
-
-    if (socket) {
-        socket.on('containerInfo', (data) => {
-            // console.log(data)
-            updateContainerState(data);
-        });
-    }
 
 
     const updateContainerList = (callback) => {
@@ -264,12 +257,13 @@ const Containers = () => {
         container.ram = getContainerRAMInfo(data) ? getContainerRAMInfo(data) + " %" : "NO DATA";
         container.cpu = getContainerCPUInfo(data) ? getContainerCPUInfo(data) + " %" : "NO DATA";
 
+      //  console.log(container.ram, container.cpu);
 
         // copy of containers
-        // const containers = [...dataSource];
-        dataSource[containerIndex] = container;
+        const containers = [...dataSource];
+        containers[containerIndex] = container;
 
-        setDataSource(dataSource);
+        // setDataSource(containers);
     };
 
     return (
