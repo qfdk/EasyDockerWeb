@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Card, Icon, message, Modal, Table, Tag} from 'antd';
 import {getContainers, getDeleteContainerById, getStartContainerById, getStopContainerById} from "../../requests";
 import ButtonGroup from "antd/es/button/button-group";
@@ -9,11 +9,11 @@ const stateColorMap = {
     "created": "yellow"
 };
 
-const socket = require('socket.io-client')('http://localhost:3000');
+const io = require('socket.io-client');
+const socket = io('http://localhost:3000');
+const Containers = () => {
 
-class Containers extends Component {
-
-    columns = [
+    const columns = [
         {
             title: 'Names',
             dataIndex: 'Names',
@@ -41,11 +41,21 @@ class Containers extends Component {
             title: 'CPU',
             dataIndex: 'cpu',
             key: 'cpu',
+            render: (text, record) => {
+                return (
+                    <p>{record.cpu ? record.cpu : null}</p>
+                )
+            }
         },
         {
             title: 'RAM',
             dataIndex: 'ram',
             key: 'ram',
+            render: (text, record) => {
+                return (
+                    <p>{record.ram ? record.ram : null}</p>
+                )
+            }
         },
         {
             title: 'Operation',
@@ -57,17 +67,17 @@ class Containers extends Component {
                         <Button size="small" type="primary"
                                 loading={record.startLoading}
                                 disabled={record.State === 'running' ? true : false}
-                                onClick={() => this.startContainerHandler(record.key)}>
+                                onClick={() => startContainerHandler(record.key)}>
                             <Icon type="caret-right"/></Button>
                         <Button size="small" type="dashed"
                                 loading={record.stopLoading}
                                 disabled={record.State === 'exited' ? true : false}
-                                onClick={() => this.stopContainerHandler(record.key)}>
+                                onClick={() => stopContainerHandler(record.key)}>
                             <Icon type="stop"/>
                         </Button>
                         <Button size="small" type="danger"
                                 loading={record.deleteLoading}
-                                onClick={() => this.deleteContainerHandler(record.key)}>
+                                onClick={() => deleteContainerHandler(record.key)}>
                             <Icon type="delete"/></Button>
                     </ButtonGroup>
                 )
@@ -76,27 +86,40 @@ class Containers extends Component {
         },
     ];
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            dataSource: [],
-            isLoading: false,
-            visible: false,
-            confirmLoading: false,
+    const [dataSource, setDataSource] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [ModalIsVisible, setModalIsVisible] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
+
+    useEffect(() => {
+        updateContainerList();
+        if (socket) {
+            socket.on('end', (status) => {
+                console.log("[END]");
+            });
         }
-    }
 
-    componentDidMount() {
-        this.updateContainerList()
-    }
+        return () => {
+            socket.emit('end');
+        }
 
-    updateContainerList() {
-        this.setState({
-            isLoading: true
+    }, []);
+
+    if (socket) {
+        socket.on('containerInfo', (data) => {
+            // console.log(data)
+            updateContainerState(data);
         });
+    }
+
+
+    const updateContainerList = (callback) => {
+        setIsLoading(true);
         getContainers().then(response => {
             if (response) {
                 const tmp = response.map(res => {
+                    socket.emit('getContainersInfo', res.Id);
                     const ports = res.Ports.map(p => {
                         let tmp = '';
                         if (p.IP) {
@@ -117,140 +140,105 @@ class Containers extends Component {
                         deleteLoading: false
                     }
                 });
-                this.setState(
-                    {
-                        dataSource: tmp
-                    }
-                );
-                tmp.forEach(container => {
-                    this.getContainerCPUInfoById(container.key);
-                    this.getContainerRAMInfoById(container.key);
-                })
+                setDataSource(tmp);
+                // return tmp;
             }
         }).catch(function (e) {
             message.error(e.toString());
         }).finally(() => {
-            this.setState({
-                isLoading: false
-            })
+            setIsLoading(false);
         })
-    }
+    };
 
-    startContainerHandler(id) {
+    const startContainerHandler = (id) => {
         console.log("startContainerHandler: " + id);
-        this.updateStateByKey(id, "startLoading", true);
+        updateStateByKey(id, "startLoading", true);
         getStartContainerById(id).then(resp => {
             // update
-            this.updateContainerList()
+            updateContainerList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            this.updateStateByKey(id, "startLoading", false);
+            updateStateByKey(id, "startLoading", false);
         })
-    }
+    };
 
-    stopContainerHandler(id) {
+    const stopContainerHandler = (id) => {
         console.log("stopContainerHandler: " + id);
-        this.updateStateByKey(id, "stopLoading", true);
+        updateStateByKey(id, "stopLoading", true);
         getStopContainerById(id).then(resp => {
             // update
-            this.updateContainerList()
+            updateContainerList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            this.updateStateByKey(id, "stopLoading", false);
+            updateStateByKey(id, "stopLoading", false);
         })
-    }
+    };
 
-    deleteContainerHandler(id) {
+    const deleteContainerHandler = (id) => {
         console.log("deleteContainerHandler: " + id);
-        this.updateStateByKey(id, "deleteLoading", true);
+        updateStateByKey(id, "deleteLoading", true);
 
         getDeleteContainerById(id).then(resp => {
             // update
-            this.updateContainerList()
+            updateContainerList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            this.updateStateByKey(id, "deleteLoading", false);
+            updateStateByKey(id, "deleteLoading", false);
         })
-    }
+    };
 
     /*
      * id id
      * type stop start delete
      * is active
      */
-    updateStateByKey(id, type, isActive) {
-        const newMapToUpdate = this.state.dataSource.map((data) => {
+    const updateStateByKey = (id, type, isActive) => {
+        const newMapToUpdate = dataSource.map((data) => {
             if (data.key === id) {
                 data[type] = isActive;
             }
             return data;
         });
 
-        this.setState({
-            loading: isActive,
-            dataSource: newMapToUpdate
-        });
-    }
-
-    showModal = () => {
-        this.setState({
-            visible: true,
-        });
+        setIsLoading(isActive);
+        setDataSource(newMapToUpdate);
     };
 
-    handleOk = () => {
-        this.setState({
-            confirmLoading: true,
-        });
+    const showModal = () => {
+        setModalIsVisible(true);
+    };
+
+    const handleOk = () => {
+        setConfirmLoading(true);
         setTimeout(() => {
-            this.setState({
-                visible: false,
-                confirmLoading: false,
-            });
+            setModalIsVisible(false);
+            setConfirmLoading(false);
         }, 2000);
     };
 
-    handleCancel = () => {
+    const handleCancel = () => {
         console.log('Clicked cancel button');
-        this.setState({
-            visible: false,
-        });
+        setModalIsVisible(false);
     };
 
 
-    getContainerRAMInfoById(id) {
-        socket.emit('getSysInfo', id);
-        socket.on(id, (data) => {
-            var json = JSON.parse(data);
-            if (json.memory_stats.usage) {
-                var tmp = ((json.memory_stats.usage / json.memory_stats.limit) * 100).toFixed(2)
-                this.updateStateById(id, tmp, 'ram');
-            }
-        });
-        socket.on('end', (status) => {
-            console.log("[END] getContainerRAMInfoById");
-        });
-    }
+    const getContainerRAMInfo = (json) => {
+        if (json.memory_stats.usage) {
+            return ((json.memory_stats.usage / json.memory_stats.limit) * 100).toFixed(2);
+        }
+    };
 
-    getContainerCPUInfoById(id) {
-        socket.emit('getSysInfo', id);
-        socket.on(id, (data) => {
-            var json = JSON.parse(data);
-            var res = this.calculateCPUPercentUnix(json);
-            if (json.precpu_stats.system_cpu_usage) {
-                this.updateStateById(id, res, 'cpu');
-            }
-        });
-        socket.on('end', (status) => {
-            console.log("[END] getContainerCPUInfoById");
-        });
-    }
+    const getContainerCPUInfo = (json) => {
+        if (json.precpu_stats.system_cpu_usage) {
+            return calculateCPUPercentUnix(json);
+        }
+    };
 
     // ref https://github.com/moby/moby/issues/29306
-    calculateCPUPercentUnix(json) {
+    const calculateCPUPercentUnix = (json) => {
         const previousCPU = json.precpu_stats.cpu_usage.total_usage;
         const previousSystem = json.precpu_stats.system_cpu_usage;
         let cpuPercent = 0.0;
@@ -260,57 +248,52 @@ class Containers extends Component {
             cpuPercent = (cpuDelta / systemDelta) * parseInt(json.cpu_stats.cpu_usage.percpu_usage.length) * 100.0
         }
         return Number(cpuPercent).toFixed(2);
-    }
+    };
 
-    updateStateById = (id, nb, type) => {
-        const containerIndex = this.state.dataSource.findIndex(container => {
-            return container.key === id;
+    const updateContainerState = (data) => {
+
+        const containerIndex = dataSource.findIndex(container => {
+            return container.key === data.id;
         });
 
         const container = {
-            ...this.state.dataSource[containerIndex]
+            ...dataSource[containerIndex]
         };
 
-        if (type === 'ram') {
-            container.ram = nb + " %";
-        }
-        if (type === 'cpu') {
-            container.cpu = nb + " %";
-        }
+
+        container.ram = getContainerRAMInfo(data) ? getContainerRAMInfo(data) + " %" : "NO DATA";
+        container.cpu = getContainerCPUInfo(data) ? getContainerCPUInfo(data) + " %" : "NO DATA";
+
 
         // copy of containers
-        const containers = [...this.state.dataSource];
+        // const containers = [...dataSource];
+        dataSource[containerIndex] = container;
 
-        containers[containerIndex] = container;
-
-        this.setState({
-            dataSource: containers
-        })
+        setDataSource(dataSource);
     };
 
-    render() {
-        return (
-            <Card title="Containers" bordered={false}>
-                <Button type="primary" style={{marginBottom: '8px'}} onClick={this.showModal}>
-                    <Icon type="plus"/>
-                    New container
-                </Button>
-                <Table dataSource={this.state.dataSource}
-                       loading={this.state.isLoading}
-                       columns={this.columns}/>
-                <Modal
-                    title="New container"
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    confirmLoading={this.confirmLoading}
-                    onCancel={this.handleCancel}
-                >
-                    <p>test</p>
-                </Modal>
-            </Card>
+    return (
+        <Card title="Containers" bordered={false}>
+            <Button type="primary" style={{marginBottom: '8px'}} onClick={showModal}>
+                <Icon type="plus"/>
+                New container
+            </Button>
+            <Table dataSource={dataSource}
+                   loading={isLoading}
+                   columns={columns}/>
+            <Modal
+                title="New container"
+                visible={ModalIsVisible}
+                onOk={handleOk}
+                confirmLoading={confirmLoading}
+                onCancel={handleCancel}
+            >
+                <p>test</p>
+            </Modal>
+        </Card>
 
-        );
-    }
+    );
+
 }
 
 export default Containers;

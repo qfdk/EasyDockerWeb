@@ -239,6 +239,39 @@ var returnContainersRouter = function (io) {
       });
     });
 
+    socket.on('end', function () {
+      array = [];
+      streams.map((stream) => {
+        stream.destroy();
+      });
+      console.log('--------end---------');
+
+    });
+
+    var array = [];
+    var streams = [];
+
+    socket.on('getContainersInfo', function (id) {
+      if (array.indexOf(id) === -1) {
+        array.push(id);
+        console.log("socket.io => getContainersInfo " + id);
+        var container = docker.getContainer(id);
+        container.stats(function (err, stream) {
+          streams.push(stream);
+          if (!err && stream != null) {
+            stream.on('data', function (data) {
+              const toSend = JSON.parse(data.toString('utf8'));
+              socket.emit("containerInfo", toSend);
+            });
+            stream.on('end', function () {
+              socket.emit('end', 'ended');
+              stream.destroy();
+            });
+          }
+        });
+      }
+
+    });
 
   });
 
