@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Card, Icon, message, Table} from "antd";
 import {getDeleteImagesById, getImages} from "../../requests";
 
-class Images extends Component {
-    columns = [
+const Images = () => {
+    const columns = [
         {
             title: 'Repo:Tags',
             dataIndex: 'RepoTags',
@@ -21,7 +21,7 @@ class Images extends Component {
             render: (text, record) => {
                 return (
                     <Button size="small" type="danger"
-                            onClick={() => this.deleteImagesHandler(record.key)}
+                            onClick={() => deleteImagesHandler(record.key)}
                             loading={record.deleteLoading}
                     >
                         <Icon type="delete"/></Button>
@@ -31,72 +31,58 @@ class Images extends Component {
         }
     ];
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            dataSource: [],
-            isLoading: false
-        }
-    }
+    const [dataSource, setDataSource] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    componentDidMount() {
-        this.updateImagesList();
-    }
+    useEffect(() => {
+        updateImagesList();
+    }, []);
 
-    updateImagesList() {
-        this.setState({
-            isLoading: true
-        });
+    const updateImagesList = () => {
+        setIsLoading(true);
         getImages().then(response => {
             const map = response.map(res => {
                 return {
                     key: res.Id,
                     RepoTags: res.RepoTags,
-                    Size: this.getImageSize(res.Size),
+                    Size: getImageSize(res.Size),
                     deleteLoading: false
                 }
             });
-            this.setState({
-                dataSource: map
-            })
-
+            setDataSource(map);
         }).catch((err) => {
             message.error(err.toString());
         }).finally(() => {
-            this.setState({
-                isLoading: false
-            })
+            setIsLoading(false);
         })
-    }
+    };
 
-    deleteImagesHandler(id) {
+    const deleteImagesHandler = (id) => {
         console.log("deleteImagesHandler: " + id);
-        this.updateStateByKey(id, "deleteLoading", true);
+        updateStateByKey(id, "deleteLoading", true);
         getDeleteImagesById(id).then(resp => {
             // update
-            this.updateImagesList();
+            updateImagesList();
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            this.updateStateByKey(id, "deleteLoading", false);
+            updateStateByKey(id, "deleteLoading", false);
         })
-    }
+    };
 
-    updateStateByKey(id, type, isActive) {
-        const newMapToUpdate = this.state.dataSource.map((data) => {
+    const updateStateByKey = (id, type, isActive) => {
+        const newMapToUpdate = dataSource.map((data) => {
             if (data.key === id) {
                 data[type] = isActive;
             }
             return data;
         });
 
-        this.setState({
-            loading: isActive,
-            dataSource: newMapToUpdate
-        });
-    }
+        setIsLoading(isActive);
+        setDataSource(newMapToUpdate);
+    };
 
-    getImageSize = (str) => {
+    const getImageSize = (str) => {
         const newSize = parseInt(str, 10);
         const tmp = (newSize / 1000 / 1000).toFixed(2).toString().substring(0, 4);
         if (tmp.indexOf('.') === 3) {
@@ -105,22 +91,22 @@ class Images extends Component {
         return tmp + " MB";
     };
 
-    render() {
-        return (
-            <Card title="Images" bordered={false}>
-                <Button type="primary" style={{marginBottom: '8px'}}>
-                    <Icon type="plus" />
-                    New images
-                </Button>
-                <br/>
-                <Table
-                    dataSource={this.state.dataSource}
-                    loading={this.state.isLoading}
-                    columns={this.columns}
-                />
-            </Card>
-        );
-    }
-}
+
+    return (
+        <Card title="Images" bordered={false}>
+            <Button type="primary" style={{marginBottom: '8px'}}>
+                <Icon type="plus"/>
+                New images
+            </Button>
+            <br/>
+            <Table
+                dataSource={dataSource}
+                loading={isLoading}
+                columns={columns}
+            />
+        </Card>
+    );
+
+};
 
 export default Images;
