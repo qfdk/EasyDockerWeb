@@ -93,5 +93,5 @@ var returnImagesRouter = function (io) {
     });
   });
   return router;
-}
+};
 module.exports = returnImagesRouter;

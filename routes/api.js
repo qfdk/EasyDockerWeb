@@ -102,4 +102,12 @@ router.get('/images/remove/:id', function (req, res, next) {
     });
 });
 
+router.get('/search/:name', function (req, res, next) {
+    const name = req.params.name;
+    docker.searchImages({term: name}, function (err, data) {
+        if (err) throw err;
+        res.json(data);
+    });
+});
+
 module.exports = router;

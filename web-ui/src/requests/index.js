@@ -43,3 +43,7 @@ export const getImages = () => {
 export const getDeleteImagesById = (id) => {
     return service.get("/api/images/remove/" + id);
 };
+
+export const searchImage = (name) => {
+    return service.get("/api/search/" + name);
+};

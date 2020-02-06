@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Icon, message, Table} from "antd";
-import {getDeleteImagesById, getImages} from "../../requests";
+import {AutoComplete, Button, Card, Icon, message, Modal, Table} from "antd";
+import {getDeleteImagesById, getImages, searchImage} from "../../requests";
+const socket = require('socket.io-client')('http://localhost:3000');
 
 const Images = () => {
     const columns = [
@@ -34,8 +35,24 @@ const Images = () => {
     const [dataSource, setDataSource] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [modalIsVisible, setModalIsVisible] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
+    const [imageName, setImageName] = useState(null);
+    const [images, setImages] = useState([]);
+
     useEffect(() => {
         updateImagesList();
+        socket.on('show', (data) => {
+            console.log(data);
+        });
+
+        socket.on('end', (status) => {
+            socket.disconnect();
+        });
+        return () => {
+            socket.disconnect();
+        }
     }, []);
 
     const updateImagesList = () => {
@@ -91,14 +108,71 @@ const Images = () => {
         return tmp + " MB";
     };
 
+    const handleOk = () => {
+        if (imageName) {
+            setConfirmLoading(true);
+            console.log('ask to pull image:' + imageName)
+            socket.emit('pull', imageName, null, null);
+        }
+        // setTimeout(() => {
+        //     setModalIsVisible(false);
+        //     setConfirmLoading(false);
+        // }, 30000);
+    };
+
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        setModalIsVisible(false);
+    };
+
+    const showModal = () => {
+        setModalIsVisible(true);
+    };
+
+    const onSearch = (searchText) => {
+        if (searchText) {
+            searchImage(searchText).then(imagesList => {
+                const newImages = imagesList.map(img => {
+                    return img.name
+                });
+                setImages(newImages);
+            }).catch(function (e) {
+                message.error(e.toString());
+            }).finally(() => {
+            });
+        }
+    };
+
+    const onSelect = (image) => {
+        console.log("on selected:" + image);
+        setImageName(image);
+    };
 
     return (
         <Card title="Images" bordered={false}>
-            <Button type="primary" style={{marginBottom: '8px'}}>
+            <Button type="primary" style={{marginBottom: '8px'}} onClick={showModal}>
                 <Icon type="plus"/>
                 New images
             </Button>
             <br/>
+            <Modal
+                title="New images"
+                visible={modalIsVisible}
+                onOk={handleOk}
+                confirmLoading={confirmLoading}
+                onCancel={handleCancel}
+                style={{width: 600}}
+            >
+                <h3>Pull a new image</h3>
+                <AutoComplete
+                    dataSource={images}
+                    style={{width: 400}}
+                    onSelect={onSelect}
+                    onSearch={onSearch}
+                    placeholder="Name of image"
+                />
+            </Modal>
+
             <Table
                 dataSource={dataSource}
                 loading={isLoading}

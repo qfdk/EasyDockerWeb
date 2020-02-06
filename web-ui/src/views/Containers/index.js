@@ -9,8 +9,7 @@ const stateColorMap = {
     "created": "yellow"
 };
 
-const io = require('socket.io-client');
-const socket = io('http://localhost:3000');
+const socket = require('socket.io-client')('http://localhost:3000');
 const Containers = () => {
     const columns = [
         {
