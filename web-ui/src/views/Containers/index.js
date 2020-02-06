@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Button, Card, Icon, message, Modal, Table, Tag} from 'antd';
 import {getContainers, getDeleteContainerById, getStartContainerById, getStopContainerById} from "../../requests";
 import ButtonGroup from "antd/es/button/button-group";
@@ -12,7 +12,6 @@ const stateColorMap = {
 const io = require('socket.io-client');
 const socket = io('http://localhost:3000');
 const Containers = () => {
-
     const columns = [
         {
             title: 'Names',
@@ -43,7 +42,7 @@ const Containers = () => {
             key: 'cpu',
             render: (text, record) => {
                 return (
-                    <p>{record.cpu ? record.cpu : '0.00 %'}</p>
+                    <p>{record.cpu ? record.cpu : null}</p>
                 )
             }
         },
@@ -53,7 +52,7 @@ const Containers = () => {
             key: 'ram',
             render: (text, record) => {
                 return (
-                    <p>{record.ram ? record.ram : '0.00 %'}</p>
+                    <p>{record.ram ? record.ram : null}</p>
                 )
             }
         },
@@ -91,9 +90,21 @@ const Containers = () => {
     const [ModalIsVisible, setModalIsVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
+    const dataRef = useRef([]);
+    const useSocket = useRef(false);
 
     useEffect(() => {
         updateContainerList();
+
+        if (!useSocket.current) {
+            socket.on('containerInfo', (data) => {
+                if (data.pids_stats.current) {
+                    updateContainerState(data);
+                }
+            });
+            useSocket.current = true;
+        }
+
         return () => {
             socket.emit('end');
             socket.off('containerInfo');
@@ -101,14 +112,18 @@ const Containers = () => {
     }, []);
 
     useEffect(() => {
-        if (socket) {
+
+        if (!useSocket.current) {
             socket.on('containerInfo', (data) => {
-                if (data.pids_stats.current && dataSource.length > 0) {
+                console.log('new socket event');
+                if (data.pids_stats.current) {
                     updateContainerState(data);
                 }
             });
+            useSocket.current = true;
         }
-    }, [dataSource.length]);
+
+    }, [dataRef.current]);
 
     const updateContainerList = (callback) => {
         setIsLoading(true);
@@ -129,14 +144,15 @@ const Containers = () => {
                         Image: res.Image,
                         Ports: ports,
                         State: res.State,
-                        cpu: 0,
-                        ram: 0,
+                        cpu: 'NO DATA',
+                        ram: 'NO DATA',
                         startLoading: false,
                         stopLoading: false,
                         deleteLoading: false
                     }
                 });
                 setDataSource(tmp);
+                dataRef.current = tmp;
                 // return tmp;
             }
         }).catch(function (e) {
@@ -148,6 +164,7 @@ const Containers = () => {
 
     const startContainerHandler = (id) => {
         console.log("startContainerHandler: " + id);
+        useSocket.current = false;
         updateStateByKey(id, "startLoading", true);
         getStartContainerById(id).then(resp => {
             // update
@@ -161,6 +178,9 @@ const Containers = () => {
 
     const stopContainerHandler = (id) => {
         console.log("stopContainerHandler: " + id);
+        socket.off('containerInfo');
+        useSocket.current = false;
+
         updateStateByKey(id, "stopLoading", true);
         getStopContainerById(id).then(resp => {
             // update
@@ -174,6 +194,9 @@ const Containers = () => {
 
     const deleteContainerHandler = (id) => {
         console.log("deleteContainerHandler: " + id);
+        socket.off('containerInfo');
+        useSocket.current = false;
+
         updateStateByKey(id, "deleteLoading", true);
 
         getDeleteContainerById(id).then(resp => {
@@ -192,13 +215,12 @@ const Containers = () => {
      * is active
      */
     const updateStateByKey = (id, type, isActive) => {
-        const newMapToUpdate = dataSource.map((data) => {
+        const newMapToUpdate = dataRef.current.map((data) => {
             if (data.key === id) {
                 data[type] = isActive;
             }
             return data;
         });
-
         setIsLoading(isActive);
         setDataSource(newMapToUpdate);
     };
@@ -253,7 +275,7 @@ const Containers = () => {
         });
 
         const container = {
-            ...dataSource[containerIndex]
+            ...dataRef.current[containerIndex]
         };
 
 
@@ -263,9 +285,10 @@ const Containers = () => {
         //  console.log(container.ram, container.cpu);
 
         // copy of containers
-        const containers = [...dataSource];
+        const containers = [...dataRef.current];
         containers[containerIndex] = container;
         setDataSource(containers);
+        dataRef.current = containers;
     };
 
     return (
