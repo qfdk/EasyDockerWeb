@@ -262,7 +262,7 @@ const Containers = () => {
 
     const updateContainerStateByData = (data) => {
 
-        const containerIndex = dataSource.findIndex(container => {
+        const containerIndex = dataRef.current.findIndex(container => {
             return container.key === data.id;
         });
 
@@ -288,7 +288,8 @@ const Containers = () => {
             </Button>
             <Table dataSource={dataSource}
                    loading={isLoading}
-                   columns={columns}/>
+                   columns={columns}
+            />
             <Modal
                 title="New container"
                 visible={modalIsVisible}
