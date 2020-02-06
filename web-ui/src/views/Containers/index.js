@@ -87,45 +87,37 @@ const Containers = () => {
 
     const [dataSource, setDataSource] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [ModalIsVisible, setModalIsVisible] = useState(false);
+    const [modalIsVisible, setModalIsVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const dataRef = useRef([]);
     const useSocket = useRef(false);
 
     useEffect(() => {
-        updateContainerList();
-
-        if (!useSocket.current) {
-            socket.on('containerInfo', (data) => {
-                if (data.pids_stats.current) {
-                    updateContainerState(data);
-                }
-            });
-            useSocket.current = true;
-        }
-
+        updateContainersList();
         return () => {
             socket.emit('end');
             socket.off('containerInfo');
+            console.log("end socket")
         }
     }, []);
 
     useEffect(() => {
-
-        if (!useSocket.current) {
+        // console.log("dataSource Changed")
+        if (!useSocket.current && dataSource.length > 0) {
+            console.log("start data ....");
+            console.log("dataSource:" + dataSource.length);
+            console.log("dataRef.current:" + dataRef.current.length)
             socket.on('containerInfo', (data) => {
-                console.log('new socket event');
                 if (data.pids_stats.current) {
-                    updateContainerState(data);
+                    updateContainerStateByData(data);
                 }
             });
             useSocket.current = true;
         }
+    }, [dataSource]);
 
-    }, [dataRef.current]);
-
-    const updateContainerList = (callback) => {
+    const updateContainersList = (callback) => {
         setIsLoading(true);
         getContainers().then(response => {
             if (response) {
@@ -164,15 +156,15 @@ const Containers = () => {
 
     const startContainerHandler = (id) => {
         console.log("startContainerHandler: " + id);
-        useSocket.current = false;
-        updateStateByKey(id, "startLoading", true);
+        // useSocket.current = false;
+        updateContainerStateById(id, "startLoading", true);
         getStartContainerById(id).then(resp => {
             // update
-            updateContainerList()
+            updateContainersList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            updateStateByKey(id, "startLoading", false);
+            updateContainerStateById(id, "startLoading", false);
         })
     };
 
@@ -181,14 +173,14 @@ const Containers = () => {
         socket.off('containerInfo');
         useSocket.current = false;
 
-        updateStateByKey(id, "stopLoading", true);
+        updateContainerStateById(id, "stopLoading", true);
         getStopContainerById(id).then(resp => {
             // update
-            updateContainerList()
+            updateContainersList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            updateStateByKey(id, "stopLoading", false);
+            updateContainerStateById(id, "stopLoading", false);
         })
     };
 
@@ -197,15 +189,15 @@ const Containers = () => {
         socket.off('containerInfo');
         useSocket.current = false;
 
-        updateStateByKey(id, "deleteLoading", true);
+        updateContainerStateById(id, "deleteLoading", true);
 
         getDeleteContainerById(id).then(resp => {
             // update
-            updateContainerList()
+            updateContainersList()
         }).catch(err => {
             message.error(err.toString());
         }).finally(() => {
-            updateStateByKey(id, "deleteLoading", false);
+            updateContainerStateById(id, "deleteLoading", false);
         })
     };
 
@@ -214,7 +206,7 @@ const Containers = () => {
      * type stop start delete
      * is active
      */
-    const updateStateByKey = (id, type, isActive) => {
+    const updateContainerStateById = (id, type, isActive) => {
         const newMapToUpdate = dataRef.current.map((data) => {
             if (data.key === id) {
                 data[type] = isActive;
@@ -268,7 +260,7 @@ const Containers = () => {
         return Number(cpuPercent).toFixed(2);
     };
 
-    const updateContainerState = (data) => {
+    const updateContainerStateByData = (data) => {
 
         const containerIndex = dataSource.findIndex(container => {
             return container.key === data.id;
@@ -278,17 +270,14 @@ const Containers = () => {
             ...dataRef.current[containerIndex]
         };
 
-
         container.ram = getContainerRAMInfo(data) ? getContainerRAMInfo(data) + " %" : "NO DATA";
         container.cpu = getContainerCPUInfo(data) ? getContainerCPUInfo(data) + " %" : "NO DATA";
-
-        //  console.log(container.ram, container.cpu);
 
         // copy of containers
         const containers = [...dataRef.current];
         containers[containerIndex] = container;
-        setDataSource(containers);
         dataRef.current = containers;
+        setDataSource(containers);
     };
 
     return (
@@ -302,7 +291,7 @@ const Containers = () => {
                    columns={columns}/>
             <Modal
                 title="New container"
-                visible={ModalIsVisible}
+                visible={modalIsVisible}
                 onOk={handleOk}
                 confirmLoading={confirmLoading}
                 onCancel={handleCancel}
@@ -313,6 +302,6 @@ const Containers = () => {
 
     );
 
-}
+};
 
 export default Containers;
