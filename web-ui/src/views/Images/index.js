@@ -1,7 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import {AutoComplete, Button, Card, Icon, message, Modal, Table} from "antd";
+import {AutoComplete, Button, Card, Col, Icon, Input, message, Modal, Row, Table} from "antd";
 import {getDeleteImagesById, getImages, searchImage} from "../../requests";
+import {Terminal} from "xterm";
+import {FitAddon} from 'xterm-addon-fit';
+
+import './images.less'
+
 const socket = require('socket.io-client')('http://localhost:3000');
+const term = new Terminal({
+    windowsMode: ['Windows', 'Win16', 'Win32', 'WinCE'].indexOf(navigator.platform) >= 0,
+    convertEol: true,
+    fontFamily: `'Fira Mono', monospace`,
+    fontSize: 14,
+    fontWeight: 400,
+    rendererType: "canvas" // canvas 或者 dom
+});
 
 const Images = () => {
     const columns = [
@@ -39,21 +52,9 @@ const Images = () => {
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const [imageName, setImageName] = useState(null);
+    const [tagName, setTagName] = useState(null);
+
     const [images, setImages] = useState([]);
-
-    useEffect(() => {
-        updateImagesList();
-        socket.on('show', (data) => {
-            console.log(data);
-        });
-
-        socket.on('end', (status) => {
-            socket.disconnect();
-        });
-        return () => {
-            socket.disconnect();
-        }
-    }, []);
 
     const updateImagesList = () => {
         setIsLoading(true);
@@ -73,6 +74,33 @@ const Images = () => {
             setIsLoading(false);
         })
     };
+
+    useEffect(() => {
+        updateImagesList();
+
+        // when get the data from backend
+        socket.on('show', (data) => {
+            term.writeln(data);
+        });
+
+        // pull image finished, then update list and clean modal
+        socket.on('end', (status) => {
+            term.writeln("========= END ==========");
+            updateImagesList();
+            setConfirmLoading(false);
+            setIsLoading(false);
+            setTimeout(() => {
+                setModalIsVisible(false);
+            }, 5000);
+            setImageName(null);
+            console.log('ennnnnnd');
+        });
+
+        return () => {
+            socket.disconnect();
+        }
+    }, []);
+
 
     const deleteImagesHandler = (id) => {
         console.log("deleteImagesHandler: " + id);
@@ -110,14 +138,23 @@ const Images = () => {
 
     const handleOk = () => {
         if (imageName) {
+            let surfix = ':';
+            if (tagName) {
+                surfix = surfix + tagName;
+            } else {
+                surfix = surfix + "latest";
+            }
+
             setConfirmLoading(true);
-            console.log('ask to pull image:' + imageName)
-            socket.emit('pull', imageName, null, null);
+            console.log('ask to pull image:' + imageName + surfix)
+            openInitTerminal();
+            term.writeln('Welcome to xterm.js');
+            term.writeln('This is a local terminal with a real data stream in the back-end.');
+            term.writeln('');
+            socket.emit('pull', imageName + surfix, null, null);
+        } else {
+            message.error("Image name is inValid.");
         }
-        // setTimeout(() => {
-        //     setModalIsVisible(false);
-        //     setConfirmLoading(false);
-        // }, 30000);
     };
 
     const handleCancel = () => {
@@ -126,6 +163,10 @@ const Images = () => {
     };
 
     const showModal = () => {
+        const terminalContainer = document.getElementById('terminal');
+        if (terminalContainer) {
+            cleanTerminal(terminalContainer);
+        }
         setModalIsVisible(true);
     };
 
@@ -148,6 +189,38 @@ const Images = () => {
         setImageName(image);
     };
 
+    const cleanTerminal = (terminalContainer) => {
+        // 清除容器的子节点
+        while (terminalContainer.children.length) {
+            terminalContainer.removeChild(terminalContainer.children[0]);
+        }
+        term.clear();
+    };
+
+    const openInitTerminal = () => {
+        console.log("loading terminal...");
+        const terminalContainer = document.getElementById('terminal');
+        cleanTerminal(terminalContainer);
+        // style
+        term.setOption("theme", {
+            background: "black",
+            foreground: "white"
+        });
+
+        // plugins
+        const fitAddon = new FitAddon();
+        term.loadAddon(fitAddon);
+
+        term.open(terminalContainer);
+
+        term.element.style.padding = '10px';
+        // fit windows
+        fitAddon.fit();
+        // focus
+        term.focus();
+
+    };
+
     return (
         <Card title="Images" bordered={false}>
             <Button type="primary" style={{marginBottom: '8px'}} onClick={showModal}>
@@ -161,16 +234,30 @@ const Images = () => {
                 onOk={handleOk}
                 confirmLoading={confirmLoading}
                 onCancel={handleCancel}
-                style={{width: 600}}
+                width={'60%'}
             >
-                <h3>Pull a new image</h3>
-                <AutoComplete
-                    dataSource={images}
-                    style={{width: 400}}
-                    onSelect={onSelect}
-                    onSearch={onSearch}
-                    placeholder="Name of image"
-                />
+                <Row>
+                    <Col span={12}>
+                        <AutoComplete
+                            dataSource={images}
+                            style={{width: '100%'}}
+                            onSelect={onSelect}
+                            onSearch={onSearch}
+                            // placeholder="Name of image"
+                        >
+                            <Input addonBefore="Name" placeholder="image name"/>
+
+                        </AutoComplete>
+                    </Col>
+                    <Col span={12}>
+                        <Input addonBefore="Tag" onChange={(e) => {
+                            setTagName(e.target.value);
+                        }} placeholder="latest"/>
+                    </Col>
+                    <Col span={24}>
+                        <div id="terminal" style={{height: "100%", width: "100%", marginTop: '20px'}}/>
+                    </Col>
+                </Row>
             </Modal>
 
             <Table
