@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "babel-preset-react-app": "^9.1.1",
     "body-parser": "~1.18.2",
     "dockerode": "^2.5.4",
     "ejs": "^2.5.7",
