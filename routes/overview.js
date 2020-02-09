@@ -1,25 +1,25 @@
-var express = require('express');
-var router = express.Router();
-var Docker = require('dockerode');
-var docker = new Docker();
+const express = require('express');
+const router = express.Router();
+const Docker = require('dockerode');
+const docker = new Docker();
 /* GET home page. */
-var returnOverviewRouter = function (io) {
-
-  router.get('/', function (req, res, next) {
-    docker.info(function (err, info) {
-      // console.log(info)
-      if (err) {
-        res.render('error', {
-          message: "Docker is running ?"
+const returnOverviewRouter = (io) => {
+    router.get('/', (req, res, next) => {
+        docker.info((err, info) => {
+            // console.log(info)
+            if (err) {
+                res.render('error', {
+                    message: "Docker is running ?"
+                });
+            } else {
+                res.render('overview', {
+                    info: info
+                });
+            }
         });
-      } else {
-        res.render('overview', {
-          info: info
-        });
-      }
     });
-  });
-  return router;
-}
+
+    return router;
+};
 
 module.exports = returnOverviewRouter;
