@@ -116,7 +116,7 @@ const Containers = () => {
         }
     }, [dataSource]);
 
-    const updateContainersList = (callback) => {
+    const updateContainersList = () => {
         setIsLoading(true);
         getContainers().then(response => {
             if (response) {
