@@ -77,7 +77,6 @@ const Images = () => {
 
     useEffect(() => {
         updateImagesList();
-
         // when get the data from backend
         socket.on('show', (data) => {
             term.writeln(data);
