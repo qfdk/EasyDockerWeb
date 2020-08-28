@@ -9,7 +9,7 @@ var returnImagesRouter = function (io) {
     docker.listImages(function (err, listImages) {
       res.locals.imageName = function (str) {
         if (str) {
-          if (str.lenght != 0) {
+          if (str.length != 0) {
             return str[0].split(':')[0];
           }
         }
@@ -17,7 +17,7 @@ var returnImagesRouter = function (io) {
       }
       res.locals.imageTag = function (str) {
         if (str) {
-          if (str.lenght != 0) {
+          if (str.length != 0) {
             return str[0].split(':')[1];
           }
         }
