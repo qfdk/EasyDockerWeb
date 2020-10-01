@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
     "babel-preset-react-app": "^9.1.1",
@@ -14,5 +14,8 @@
     "express-status-monitor": "^1.2.8",
     "serve-favicon": "^2.4.5",
     "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

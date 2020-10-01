@@ -4,8 +4,8 @@ const Docker = require('dockerode');
 const docker = new Docker();
 
 /* GET  overview. */
-router.get('/overview', function (req, res, next) {
-    docker.info(function (err, info) {
+router.get('/overview', (req, res, next) => {
+    docker.info((err, info) => {
         if (err) {
             res.json({
                 msg: "error",
@@ -20,15 +20,15 @@ router.get('/overview', function (req, res, next) {
 /**
  * containers list
  */
-router.get('/containers', function (req, res, next) {
-    docker.listContainers({all: true}, function (err, containers) {
+router.get('/containers', (req, res, next) => {
+    docker.listContainers({all: true}, (err, containers) => {
         res.json(containers);
     });
 });
 
-router.get('/containers/start/:id', function (req, res, next) {
+router.get('/containers/start/:id', (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.start(function (err, data) {
+    container.start((err, data) => {
         if (!err) {
             res.json({
                 code: 200,
@@ -43,9 +43,9 @@ router.get('/containers/start/:id', function (req, res, next) {
     });
 });
 
-router.get('/containers/stop/:id', function (req, res, next) {
+router.get('/containers/stop/:id', (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.stop(function (err, data) {
+    container.stop((err, data) => {
         if (!err) {
             res.json({
                 code: 200,
@@ -60,9 +60,9 @@ router.get('/containers/stop/:id', function (req, res, next) {
     });
 });
 
-router.get('/containers/remove/:id', function (req, res, next) {
+router.get('/containers/remove/:id', (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.remove({force: true}, function (err, data) {
+    container.remove({force: true}, (err, data) => {
         if (!err) {
             res.json({
                 code: 200,
@@ -77,8 +77,8 @@ router.get('/containers/remove/:id', function (req, res, next) {
     });
 });
 
-router.get('/images', function (req, res, next) {
-    docker.listImages(null, function (err, listImages) {
+router.get('/images', (req, res, next) => {
+    docker.listImages(null, (err, listImages) => {
         if (err) {
             res.json(err);
         } else {
@@ -87,13 +87,13 @@ router.get('/images', function (req, res, next) {
     });
 });
 
-router.get('/images/remove/:id', function (req, res, next) {
+router.get('/images/remove/:id', (req, res, next) => {
     let imageId = req.params.id;
     if (imageId.indexOf(":") > 0) {
         imageId = imageId.split(":")[1];
     }
     const image = docker.getImage(imageId);
-    image.remove({force: true}, function (err, data) {
+    image.remove({force: true}, (err, data) => {
         if (err) {
             res.json(err);
         } else {
@@ -102,9 +102,9 @@ router.get('/images/remove/:id', function (req, res, next) {
     });
 });
 
-router.get('/search/:name', function (req, res, next) {
+router.get('/search/:name', (req, res, next) => {
     const name = req.params.name;
-    docker.searchImages({term: name}, function (err, data) {
+    docker.searchImages({term: name}, (err, data) => {
         if (err) throw err;
         res.json(data);
     });
