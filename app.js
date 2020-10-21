@@ -2,6 +2,10 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
+const session = require('express-session');
+
+const {checkUser} = require('./middlewares/security');
+
 const io = require('socket.io')();
 const favicon = require('serve-favicon');
 app.io = io;
@@ -17,13 +21,22 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
 
+app.use(session({
+    saveUninitialized: true,
+    resave: false,
+    secret: 'easy-docker-web',
+    cookie: {
+        maxAge: 365 * 24 * 60 * 60 * 1000,
+        expires: false
+    }
+}));
+
 // public files
 app.use('/static', express.static(__dirname + '/public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(require('express-status-monitor')());
 
 app.all('*', (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -36,6 +49,11 @@ app.all('*', (req, res, next) => {
     }
 });
 
+app.use(checkUser);
+app.use(function (req, res, next) {
+    res.locals.isLogin = req.session.isLogin || false;
+    next();
+});
 app.use('/', index);
 app.use('/api', api);
 app.use('/overview', overview);
