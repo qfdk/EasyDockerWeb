@@ -114,6 +114,7 @@
             </div>
             <form action="/containers/create" method="POST" role="form">
                 <div class="modal-body">
+
                     <div class="form-group">
                         <label for="containerImage">Image: </label>
                         <select id="containerImage" name="containerImage" class="selectpicker" data-live-search="true"
@@ -126,6 +127,21 @@
                             <% } %>
                         </select>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" placeholder="Container name" class="form-control" name="containerName"
+                                   id="containerName">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>
+                                <input type="checkbox"
+                                       name="isAlways" id="isAlways"> Always restart
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="containerVolumeSource">Volume: </label>
                         <div class="row">
@@ -139,6 +155,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label for="containerPortSource">Expose port (TCP): </label>
                         <div class="row">

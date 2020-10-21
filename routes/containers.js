@@ -54,13 +54,25 @@ const returnContainersRouter = (io) => {
             }
         };
 
+        // name
+        if (req.body.containerName !== "") {
+            options = {
+                ...options,
+                name: req.body.containerName
+            }
+        }
+
         // volume
         if (req.body.containerVolumeSource !== "" && req.body.containerVolumeDistination !== "") {
-            var src = req.body.containerVolumeSource;
-            var dis = req.body.containerVolumeDistination;
+            const src = req.body.containerVolumeSource;
+            const dis = req.body.containerVolumeDistination;
             options['Volumes'] = JSON.parse('{"' + dis + '": {}}');
             options.HostConfig = {
-                'Binds': [src + ':' + dis]
+                'Binds': [src + ':' + dis],
+                "RestartPolicy": {
+                    "Name": req.body.isAlways === 'on' ? "always" : "",
+                    "MaximumRetryCount": 5
+                },
             }
         }
 
@@ -83,7 +95,7 @@ const returnContainersRouter = (io) => {
                 });
             });
         } else {
-            var runOpt = {
+            const runOpt = {
                 Image: req.body.containerImage,
                 AttachStdin: true,
                 AttachStdout: true,
@@ -91,10 +103,9 @@ const returnContainersRouter = (io) => {
                 Tty: true,
                 //Cmd: ['/bin/bash'],
                 OpenStdin: false,
-                StdinOnce: false
+                StdinOnce: false,
+                ...options
             };
-            runOpt['Volumes'] = options.Volumes;
-            runOpt['HostConfig'] = options.HostConfig;
             docker.createContainer(runOpt).then(function (container) {
                 return container.start();
             }).then(function (container) {
