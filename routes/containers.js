@@ -38,7 +38,11 @@ const returnContainersRouter = (io) => {
     router.get('/remove/:id', function (req, res, next) {
         const container = docker.getContainer(req.params.id);
         container.remove({force: true}, function (err, data) {
-            res.redirect('/containers');
+            if (err) {
+                res.render('error', {error: err, message: err.json.message});
+            } else {
+                res.redirect('/containers');
+            }
         });
     });
 
@@ -221,9 +225,7 @@ const returnContainersRouter = (io) => {
                 stream.destroy();
             });
             console.log('--------end---------');
-
         });
-
 
         let array = [];
         let streams = [];
