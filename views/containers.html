@@ -58,11 +58,14 @@
 
                 <td>
                     <% if(container.State=='running'){ %>
+
+                    <% if(!(container.Image.includes("qfdk")||container.Image.includes("easy-docker-web"))){ %>
                     <a class="btn btn-warning btn-xs"
                        data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..."
                        href="/containers/stop/<%= container.Id %>">
                         <span class="glyphicon glyphicon-stop"></span> Stop
                     </a>
+                    <% } %>
                     <a class="btn btn-primary btn-xs"
                        data-loading-text="<i class='fa fa-spinner fa-spin fa-fw' aria-hidden='true'></i> Waiting..."
                        href="/containers/console/<%= container.Id %>">
