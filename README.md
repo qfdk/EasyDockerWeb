@@ -2,8 +2,10 @@
 
 A simple Web Ui for Docker using `xterm.js`, `Node.js` and `Socket.io`
 
-- if you need docker cluster pls use [https://portainer.io/](https://portainer.io/)
-- autocomplete image name
+- if you need to use docker cluster, [https://portainer.io/](https://portainer.io/) may be a good choice.
+- search image by name
+- terminal
+- log
 
 ## Quick start
 
@@ -17,24 +19,13 @@ docker run -it -d -p 3000:3000 -e EDW_USERNAME='admin' -e EDW_PASSWORD='admin' -
 
 [http://localhost:3000](http://localhost:3000) enjoy ;)
 
-## React.js web ui
-
-```bash
-cd web-ui
-yarn install
-yarn start
-```
-[http://localhost:4000](http://localhost:4000)
-
-We have a todo list now.
-
 ## Requirement
 
 - Node.js
 - Docker remote api >= v1.24
-- macOs or Linux or windows
+- macOS or Linux or windows
 
-## Developement mode
+## Development mode
 
 ```bash
 git clone https://github.com/qfdk/EasyDockerWeb.git
@@ -43,9 +34,14 @@ npm i
 npm start
 ```
 
-## TODO
+## Build your owen docker image
 
-Refactoring by using react.js https://github.com/qfdk/EasyDockerWeb/tree/react
+```bash
+git clone https://github.com/qfdk/EasyDockerWeb.git
+cd EasyDockerWeb
+docker build -t easy-docker-web .
+docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker-web
+```
 
 ## 中文
 
@@ -54,12 +50,6 @@ Refactoring by using react.js https://github.com/qfdk/EasyDockerWeb/tree/react
 
 - 计划使用react重构 https://github.com/qfdk/EasyDockerWeb/tree/react
 
-## Build your owen docker image
-
-```bash
-docker build -t easy-docker-web .
-docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker-web
-```
 ## Images
 
 ![overview](./images/overview.png)
@@ -75,3 +65,20 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 ![pull](./images/pull.png)
 
 ![pull2](./images/pull2.png)
+
+## Sponsor
+<a href="https://www.jetbrains.com"><img src=".github/jetbrains-variant-4.svg" alt="JetBrains" width="200"/></a>
+
+## React.js web ui (beta)
+
+```bash
+cd web-ui
+yarn install
+yarn start
+```
+[http://localhost:4000](http://localhost:4000)
+
+We have a todo list now.
+
+## TODO
+Refactoring by using react.js https://github.com/qfdk/EasyDockerWeb/tree/react
