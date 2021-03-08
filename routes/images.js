@@ -1,49 +1,53 @@
-var express = require('express');
-var router = express.Router();
-var Docker = require('dockerode');
-var docker = new Docker();
+const express = require('express');
+const router = express.Router();
+const Docker = require('dockerode');
+const docker = new Docker();
 
-var returnImagesRouter = function (io) {
+const returnImagesRouter = (io) => {
     /* GET users listing. */
-    router.get('/', function (req, res, next) {
-        docker.listImages(function (err, listImages) {
-            res.locals.imageName = function (str) {
+    router.get('/', (req, res, next) => {
+        docker.listImages((err, listImages) => {
+            res.locals.imageName = (str) => {
                 if (str) {
                     if (str.length != 0) {
                         return str[0].split(':')[0];
                     }
                 }
                 return str;
-            }
-            res.locals.imageTag = function (str) {
+            };
+            // image Tag
+            res.locals.imageTag = (str) => {
                 if (str) {
                     if (str.length != 0) {
                         return str[0].split(':')[1];
                     }
                 }
                 return str;
-            }
-            res.locals.imageSize = function (str) {
-                var newSiez = parseInt(str, 10);
-                var str = (newSiez / 1000 / 1000).toFixed(2).toString().substring(0, 4);
+            };
+            // imageSize
+            res.locals.imageSize = (str) => {
+                const newSiez = parseInt(str, 10);
+                str = (newSiez / 1000 / 1000).toFixed(2).
+                toString().
+                substring(0, 4);
                 if (str.indexOf('.') == 3) {
                     return str.split('.')[0];
                 }
                 return str;
-            }
+            };
             res.render('images', {
-                images: listImages
-            })
+                images: listImages,
+            });
         });
     });
 
-    router.get('/remove/:id', function (req, res, next) {
-        var imageId = req.params.id;
-        if (imageId.indexOf(":") > 0) {
-            imageId = imageId.split(":")[1];
+    router.get('/remove/:id', (req, res, next) => {
+        let imageId = req.params.id;
+        if (imageId.indexOf(':') > 0) {
+            imageId = imageId.split(':')[1];
         }
-        var image = docker.getImage(imageId);
-        image.remove({force: true}, function (err, data) {
+        let image = docker.getImage(imageId);
+        image.remove({force: true}, (err, data) => {
             if (err) {
                 res.render('error', {error: err, message: err.json.message});
             } else {
@@ -52,16 +56,16 @@ var returnImagesRouter = function (io) {
         });
     });
 
-    router.get('/search/:name', function (req, res, next) {
-        var name = req.params.name;
-        docker.searchImages({term: name}, function (err, data) {
+    router.get('/search/:name', (req, res, next) => {
+        let name = req.params.name;
+        docker.searchImages({term: name}, (err, data) => {
             if (err) throw err;
             res.json(data);
         });
     });
-    io.on('connection', function (socket) {
-        socket.on('pull', function (imageName, w, h) {
-            docker.pull(imageName, function (err, stream) {
+    io.on('connection', (socket) => {
+        socket.on('pull', (imageName, w, h) => {
+            docker.pull(imageName, (err, stream) => {
                 if (err) {
                     const tmp = err.toString();
                     socket.emit('show', tmp);
@@ -80,7 +84,8 @@ var returnImagesRouter = function (io) {
 
                     function onProgress(event) {
                         if (event.id) {
-                            socket.emit('show', event.status + ':' + event.id + '\n');
+                            socket.emit('show',
+                                event.status + ':' + event.id + '\n');
                         } else {
                             socket.emit('show', event.status + '\n');
                         }

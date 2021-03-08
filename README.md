@@ -51,6 +51,7 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 - 计划使用react重构 https://github.com/qfdk/EasyDockerWeb/tree/react
 
 ## Images
+![login](./images/login.png)
 
 ![overview](./images/overview.png)
 
@@ -67,7 +68,7 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 ![pull2](./images/pull2.png)
 
 ## Sponsor
-<a href="https://www.jetbrains.com"><img src=".github/jetbrains-variant-4.svg" alt="JetBrains" width="200"/></a>
+<a href="https://www.jetbrains.com"><img src="images/jetbrains-variant-4.svg" alt="JetBrains" width="200"/></a>
 
 ## React.js web ui (beta)
 
