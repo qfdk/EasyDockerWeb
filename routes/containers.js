@@ -92,7 +92,7 @@ const returnContainersRouter = (io) => {
         }
 
         if (req.body.containerCmd != '') {
-            options.Cmd = ['/bin/bash', '-c', req.body.containerCmd];
+            options.Cmd = ['/bin/sh', '-c', req.body.containerCmd];
             // console.log(options)
             docker.createContainer(options, function(err, container) {
                 if (err) throw err;
