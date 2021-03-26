@@ -107,7 +107,7 @@ const returnContainersRouter = (io) => {
                 AttachStdout: true,
                 AttachStderr: true,
                 Tty: true,
-                //Cmd: ['/bin/bash'],
+                //Cmd: ['/bin/sh'],
                 OpenStdin: false,
                 StdinOnce: false,
                 ...options,
