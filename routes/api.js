@@ -8,8 +8,8 @@ router.get('/overview', (req, res, next) => {
     docker.info((err, info) => {
         if (err) {
             res.json({
-                msg: "error",
-                message: "Docker is running ?"
+                msg: 'error',
+                message: 'Docker is running ?',
             });
         } else {
             res.json(info);
@@ -32,13 +32,13 @@ router.get('/containers/start/:id', (req, res, next) => {
         if (!err) {
             res.json({
                 code: 200,
-                msg: 'OK'
-            })
+                msg: 'OK',
+            });
         } else {
             res.json({
                 code: 400,
-                msg: err.toString()
-            })
+                msg: err.toString(),
+            });
         }
     });
 });
@@ -49,13 +49,13 @@ router.get('/containers/stop/:id', (req, res, next) => {
         if (!err) {
             res.json({
                 code: 200,
-                msg: 'OK'
-            })
+                msg: 'OK',
+            });
         } else {
             res.json({
                 code: 400,
-                msg: err.toString()
-            })
+                msg: err.toString(),
+            });
         }
     });
 });
@@ -66,13 +66,13 @@ router.get('/containers/remove/:id', (req, res, next) => {
         if (!err) {
             res.json({
                 code: 200,
-                msg: 'OK'
-            })
+                msg: 'OK',
+            });
         } else {
             res.json({
                 code: 400,
-                msg: err.toString()
-            })
+                msg: err.toString(),
+            });
         }
     });
 });
@@ -89,8 +89,8 @@ router.get('/images', (req, res, next) => {
 
 router.get('/images/remove/:id', (req, res, next) => {
     let imageId = req.params.id;
-    if (imageId.indexOf(":") > 0) {
-        imageId = imageId.split(":")[1];
+    if (imageId.indexOf(':') > 0) {
+        imageId = imageId.split(':')[1];
     }
     const image = docker.getImage(imageId);
     image.remove({force: true}, (err, data) => {

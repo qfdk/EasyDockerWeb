@@ -8,7 +8,7 @@ const returnContainersRouter = (io) => {
     /* GET containers. */
     router.get('/', (req, res, next) => {
         docker.listContainers({all: true}, (err, containers) => {
-            res.locals.formatName = function(str) {
+            res.locals.formatName = (str) => {
                 return str[0].split('/')[1];
             };
             docker.listImages(null, (err, listImages) => {
@@ -37,7 +37,7 @@ const returnContainersRouter = (io) => {
 
     router.get('/remove/:id', (req, res, next) => {
         const container = docker.getContainer(req.params.id);
-        container.remove({force: true}, function(err, data) {
+        container.remove({force: true}, (err, data) => {
             if (err) {
                 res.render('error', {error: err, message: err.json.message});
             } else {
@@ -94,9 +94,9 @@ const returnContainersRouter = (io) => {
         if (req.body.containerCmd != '') {
             options.Cmd = ['/bin/sh', '-c', req.body.containerCmd];
             // console.log(options)
-            docker.createContainer(options, function(err, container) {
+            docker.createContainer(options, (err, container) => {
                 if (err) throw err;
-                container.start(function(err, data) {
+                container.start((err, data) => {
                     res.redirect('/containers/logs/' + container.id);
                 });
             });
@@ -185,14 +185,14 @@ const returnContainersRouter = (io) => {
                 socket.emit('show', chunk.toString('utf8'));
             });
 
-            var logs_opts = {
+            const logs_opts = {
                 follow: true,
                 stdout: true,
                 stderr: true,
                 timestamps: false,
             };
 
-            function handler(err, stream) {
+            const handler = (err, stream) => {
                 container.modem.demuxStream(stream, logStream, logStream);
                 if (!err && stream) {
                     stream.on('end', () => {
@@ -201,12 +201,12 @@ const returnContainersRouter = (io) => {
                         stream.destroy();
                     });
                 }
-            }
+            };
 
             container.logs(logs_opts, handler);
         });
 
-        socket.on('getSysInfo', function(id) {
+        socket.on('getSysInfo', (id) => {
             const container = docker.getContainer(id);
             container.stats((err, stream) => {
                 if (!err && stream != null) {
@@ -236,7 +236,7 @@ const returnContainersRouter = (io) => {
             if (array.indexOf(id) === -1) {
                 array.push(id);
                 console.log('socket.io => getContainersInfo ' + id);
-                var container = docker.getContainer(id);
+                const container = docker.getContainer(id);
                 container.stats((err, stream) => {
                     streams.push(stream);
                     if (!err && stream != null) {
@@ -244,14 +244,13 @@ const returnContainersRouter = (io) => {
                             const toSend = JSON.parse(data.toString('utf8'));
                             socket.emit('containerInfo', toSend);
                         });
-                        stream.on('end', function() {
+                        stream.on('end', () => {
                             socket.emit('end', 'ended');
                             stream.destroy();
                         });
                     }
                 });
             }
-
         });
 
     });

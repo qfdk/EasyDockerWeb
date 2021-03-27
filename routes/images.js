@@ -73,16 +73,15 @@ const returnImagesRouter = (io) => {
                         socket.emit('end');
                     }, 10000);
                 } else {
-                    docker.modem.followProgress(stream, onFinished, onProgress);
 
-                    function onFinished(err, output) {
+                    const onFinished = (err, output) => {
                         if (err) {
                             console.log(err);
                         }
                         socket.emit('end');
-                    }
+                    };
 
-                    function onProgress(event) {
+                    const onProgress = (event) => {
                         if (event.id) {
                             socket.emit('show',
                                 event.status + ':' + event.id + '\n');
@@ -92,7 +91,9 @@ const returnImagesRouter = (io) => {
                         if (event.progress) {
                             socket.emit('show', event.progress + '\n');
                         }
-                    }
+                    };
+
+                    docker.modem.followProgress(stream, onFinished, onProgress);
                 }
 
             });
