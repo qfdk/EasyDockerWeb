@@ -8,14 +8,14 @@ const returnContainersRouter = (io) => {
     /* GET containers. */
     router.get('/', (req, res, next) => {
         docker.listContainers({all: true}, (err, containers) => {
-            res.locals.formatName = function (str) {
+            res.locals.formatName = (str) => {
                 return str[0].split('/')[1];
             };
             docker.listImages(null, (err, listImages) => {
                 res.render('containers',
                     {
                         containers: containers,
-                        images: listImages
+                        images: listImages,
                     });
             });
         });
@@ -28,21 +28,25 @@ const returnContainersRouter = (io) => {
         });
     });
 
-    router.get('/stop/:id', function (req, res, next) {
+    router.get('/stop/:id', (req, res, next) => {
         const container = docker.getContainer(req.params.id);
         container.stop(null, (err, data) => {
             res.redirect('/containers');
         });
     });
 
-    router.get('/remove/:id', function (req, res, next) {
+    router.get('/remove/:id', (req, res, next) => {
         const container = docker.getContainer(req.params.id);
-        container.remove({force: true}, function (err, data) {
-            res.redirect('/containers');
+        container.remove({force: true}, (err, data) => {
+            if (err) {
+                res.render('error', {error: err, message: err.json.message});
+            } else {
+                res.redirect('/containers');
+            }
         });
     });
 
-    router.post('/create', function (req, res, next) {
+    router.post('/create', (req, res, next) => {
         let options = {
             Image: req.body.containerImage,
             AttachStdin: false,
@@ -50,56 +54,69 @@ const returnContainersRouter = (io) => {
             AttachStderr: true,
             Tty: false,
             HostConfig: {
-                PortBindings: {}
-            }
+                PortBindings: {},
+            },
         };
 
+        // name
+        if (req.body.containerName !== '') {
+            options = {
+                ...options,
+                name: req.body.containerName,
+            };
+        }
+
         // volume
-        if (req.body.containerVolumeSource !== "" && req.body.containerVolumeDistination !== "") {
-            var src = req.body.containerVolumeSource;
-            var dis = req.body.containerVolumeDistination;
+        if (req.body.containerVolumeSource !== '' &&
+            req.body.containerVolumeDistination !== '') {
+            const src = req.body.containerVolumeSource;
+            const dis = req.body.containerVolumeDistination;
             options['Volumes'] = JSON.parse('{"' + dis + '": {}}');
             options.HostConfig = {
-                'Binds': [src + ':' + dis]
-            }
+                'Binds': [src + ':' + dis],
+                'RestartPolicy': {
+                    'Name': req.body.isAlways === 'on' ? 'always' : '',
+                    'MaximumRetryCount': 5,
+                },
+            };
         }
 
         // port
-        if (req.body.containerPortSource !== "" && req.body.containerPortDistination !== "") {
-            var src = req.body.containerPortSource + '/tcp';
-            var dis = req.body.containerPortDistination;
+        if (req.body.containerPortSource !== '' &&
+            req.body.containerPortDistination !== '') {
+            const src = req.body.containerPortSource + '/tcp';
+            const dis = req.body.containerPortDistination;
             options['ExposedPorts'] = JSON.parse('{"' + src + '": {}}');
-            var tmp = '{ "' + src + '": [{ "HostPort":"' + dis + '" }]}';
+            const tmp = '{ "' + src + '": [{ "HostPort":"' + dis + '" }]}';
             options.HostConfig.PortBindings = JSON.parse(tmp);
         }
 
-        if (req.body.containerCmd != "") {
-            options.Cmd = ['/bin/bash', '-c', req.body.containerCmd];
+        if (req.body.containerCmd != '') {
+            options.Cmd = ['/bin/sh', '-c', req.body.containerCmd];
             // console.log(options)
-            docker.createContainer(options, function (err, container) {
-                if (err) throw err
-                container.start(function (err, data) {
+            docker.createContainer(options, (err, container) => {
+                if (err) throw err;
+                container.start((err, data) => {
                     res.redirect('/containers/logs/' + container.id);
                 });
             });
         } else {
-            var runOpt = {
+            const runOpt = {
                 Image: req.body.containerImage,
                 AttachStdin: true,
                 AttachStdout: true,
                 AttachStderr: true,
                 Tty: true,
-                //Cmd: ['/bin/bash'],
+                //Cmd: ['/bin/sh'],
                 OpenStdin: false,
-                StdinOnce: false
+                StdinOnce: false,
+                ...options,
             };
-            runOpt['Volumes'] = options.Volumes;
-            runOpt['HostConfig'] = options.HostConfig;
-            docker.createContainer(runOpt).then(function (container) {
+            docker.createContainer(runOpt).then(function(container) {
                 return container.start();
-            }).then(function (container) {
+            }).then((container) => {
                 res.redirect('/containers');
-            })
+            });
         }
 
     });
@@ -116,11 +133,11 @@ const returnContainersRouter = (io) => {
         socket.on('exec', (id, w, h) => {
             const container = docker.getContainer(id);
             let cmd = {
-                "AttachStdout": true,
-                "AttachStderr": true,
-                "AttachStdin": true,
-                "Tty": true,
-                Cmd: ['/bin/bash']
+                'AttachStdout': true,
+                'AttachStderr': true,
+                'AttachStdin': true,
+                'Tty': true,
+                Cmd: ['/bin/sh'],
             };
             container.exec(cmd, (err, exec) => {
                 let options = {
@@ -130,7 +147,7 @@ const returnContainersRouter = (io) => {
                     stdout: true,
                     stderr: true,
                     // fix vim
-                    hijack: true
+                    hijack: true,
                 };
 
                 container.wait((err, data) => {
@@ -168,14 +185,14 @@ const returnContainersRouter = (io) => {
                 socket.emit('show', chunk.toString('utf8'));
             });
 
-            var logs_opts = {
+            const logs_opts = {
                 follow: true,
                 stdout: true,
                 stderr: true,
-                timestamps: false
+                timestamps: false,
             };
 
-            function handler(err, stream) {
+            const handler = (err, stream) => {
                 container.modem.demuxStream(stream, logStream, logStream);
                 if (!err && stream) {
                     stream.on('end', () => {
@@ -184,12 +201,12 @@ const returnContainersRouter = (io) => {
                         stream.destroy();
                     });
                 }
-            }
+            };
 
             container.logs(logs_opts, handler);
         });
 
-        socket.on('getSysInfo', function (id) {
+        socket.on('getSysInfo', (id) => {
             const container = docker.getContainer(id);
             container.stats((err, stream) => {
                 if (!err && stream != null) {
@@ -210,9 +227,7 @@ const returnContainersRouter = (io) => {
                 stream.destroy();
             });
             console.log('--------end---------');
-
         });
-
 
         let array = [];
         let streams = [];
@@ -220,23 +235,22 @@ const returnContainersRouter = (io) => {
         socket.on('getContainersInfo', (id) => {
             if (array.indexOf(id) === -1) {
                 array.push(id);
-                console.log("socket.io => getContainersInfo " + id);
-                var container = docker.getContainer(id);
+                console.log('socket.io => getContainersInfo ' + id);
+                const container = docker.getContainer(id);
                 container.stats((err, stream) => {
                     streams.push(stream);
                     if (!err && stream != null) {
                         stream.on('data', (data) => {
                             const toSend = JSON.parse(data.toString('utf8'));
-                            socket.emit("containerInfo", toSend);
+                            socket.emit('containerInfo', toSend);
                         });
-                        stream.on('end', function () {
+                        stream.on('end', () => {
                             socket.emit('end', 'ended');
                             stream.destroy();
                         });
                     }
                 });
             }
-
         });
 
     });

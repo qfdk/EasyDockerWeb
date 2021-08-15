@@ -1,20 +1,13 @@
 <% include include/header.html %>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-
+<div class="container">
+    <div class="row">
+        <div class="text-center">
+            <div class="jumbotron">
+                <h2><%= error.status %> <%= message %></h2>
+                <pre><%= error.stack %></pre>
             </div>
-            <div class="col-md-6 text-center">
-                <div class="jumbotron">
-                    <h3>
-                        <%= message %>
-                    </h3>
-                </div>
-                <a class="btn btn-danger" href="/">Return</a>
-            </div>
-        </div>
-        <div class="col-md-3">
-
+            <a class="btn btn-danger" href="/">Return</a>
         </div>
     </div>
-    <% include include/footer.html %>
+</div>
+<% include include/footer.html %>
