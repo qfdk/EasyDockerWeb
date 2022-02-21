@@ -19,13 +19,13 @@
     "react-dom": "^16.12.0",
     "react-loadable": "^5.5.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.3.0",
+    "react-scripts": "^3.4.1",
     "socket.io-client": "^2.3.0",
     "xterm": "^4.4.0",
     "xterm-addon-fit": "^0.3.0"
   },
   "scripts": {
-    "start": "concurrently 'PORT=4000 react-app-rewired start' 'cd .. && npm start'",
+    "start": "concurrently 'PORT=4000 react-app-rewired start'  'cd .. && npm start'",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject"
