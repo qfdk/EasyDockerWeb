@@ -112,7 +112,7 @@ const returnContainersRouter = (io) => {
                 StdinOnce: false,
                 ...options,
             };
-            docker.createContainer(runOpt).then(function(container) {
+            docker.createContainer(runOpt).then(function (container) {
                 return container.start();
             }).then((container) => {
                 res.redirect('/containers');
@@ -137,7 +137,7 @@ const returnContainersRouter = (io) => {
                 'AttachStderr': true,
                 'AttachStdin': true,
                 'Tty': true,
-                Cmd: ['/bin/sh'],
+                Cmd: ['/bin/bash'],
             };
             container.exec(cmd, (err, exec) => {
                 let options = {
@@ -170,7 +170,8 @@ const returnContainersRouter = (io) => {
                     });
 
                     socket.on('cmd', (data) => {
-                        stream.write(data);
+                        if (typeof data !== 'object')
+                            stream.write(data);
                     });
 
                 });

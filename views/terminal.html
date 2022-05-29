@@ -1,5 +1,134 @@
-<% include include/header.html %>
-    <div class="container" data-page="terminal">
-        <div id="terminal"></div>
-    </div>
-<% include include/footer.html %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terminal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.18.0/css/xterm.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xterm@4.18.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-attach@0.6.0/lib/xterm-addon-attach.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-serialize@0.6.2/lib/xterm-addon-serialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-unicode11@0.3.0/lib/xterm-addon-unicode11.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.5.1/lib/xterm-addon-web-links.min.js"></script>
+    <style>
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar,
+        div::-webkit-scrollbar {
+            display: none;
+            width: 0;
+        }
+
+        html,
+        body {
+            margin: 0;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        div#terminal {
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        div#terminal div {
+            height: 100%;
+        }
+
+        .xterm-viewport,
+        .xterm-screen {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .terminal.xterm {
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="terminal"></div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/socket.io.js"></script>
+<script>
+    (function () {
+        var terminal = new Terminal({
+            screenKeys: true,
+            useStyle: true,
+            cursorBlink: true,
+            cursorStyle: 'bar', // 光标样式
+            fullscreenWin: true,
+            maximizeWin: true,
+            screenReaderMode: true,
+            cols: 128,
+            theme: {
+                foreground: 'white', // 字体
+                background: '#2A2C34', // 背景色
+                cursor: 'help', // 设置光标
+                lineHeight: 16,
+            },
+        });
+        var id = window.location.pathname.split('/')[3];
+        var host = window.location.origin;
+        var socket = io.connect(host);
+
+        socket.emit('exec', id, $('#terminal').width(), $('#terminal').height());
+
+        terminal.open(document.getElementById("terminal"));
+        var attachAddon = new AttachAddon.AttachAddon(socket);
+        var fitAddon = new FitAddon.FitAddon();
+        terminal.loadAddon(fitAddon);
+        var webLinksAddon = new WebLinksAddon.WebLinksAddon();
+        terminal.loadAddon(webLinksAddon);
+        var unicode11Addon = new Unicode11Addon.Unicode11Addon();
+        terminal.loadAddon(unicode11Addon);
+        var serializeAddon = new SerializeAddon.SerializeAddon();
+        terminal.loadAddon(serializeAddon);
+        terminal.loadAddon(attachAddon);
+        terminal._initialized = true;
+        terminal.focus();
+
+        setTimeout(function () {
+            fitAddon.fit();
+            socket.emit('cmd', "export TERM=xterm\n");
+            socket.emit('cmd', "PS1=\"\\[\\033[01;31m\\]\\u\\[\\033[01;33m\\]@\\[\\033[01;36m\\]\\h \\[\\033[01;33m\\]\\w \\[\\033[01;35m\\]\\$ \\[\\033[00m\\]\"\n");
+            socket.emit('cmd', "alias ls='ls --color'\n");
+            socket.emit('cmd', "alias ll='ls -alF'\n");
+            socket.emit('cmd', "clear\n");
+        });
+
+        terminal.onResize(function (event) {
+            var rows = event.rows;
+            var cols = event.cols;
+            var size = JSON.stringify({cols: cols, rows: rows + 1});
+            var send = new TextEncoder().encode("\x01" + size);
+            console.log('resizing to', size);
+            socket.emit('cmd', send);
+        });
+
+        terminal.onTitleChange(function (event) {
+            console.log(event);
+        });
+        window.onresize = function () {
+            fitAddon.fit();
+        };
+
+        terminal.onData((data) => {
+            socket.emit('cmd', data);
+        });
+        socket.on('show', (data) => {
+            terminal.write(data);
+        });
+
+        socket.on('end', (status) => {
+            // $('#terminal').empty();
+            socket.disconnect();
+            terminal.write('\r\n\nconnection has been terminated from the server-side (hit refresh to restart)\n');
+        });
+    })();
+</script>
+</body>
+</html>
