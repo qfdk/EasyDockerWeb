@@ -103,15 +103,14 @@
         terminal.onResize(function (event) {
             var rows = event.rows;
             var cols = event.cols;
-            var size = JSON.stringify({cols: cols, rows: rows + 1});
-            var send = new TextEncoder().encode("\x01" + size);
-            console.log('resizing to', size);
-            socket.emit('cmd', send);
+            console.log('resizing to', {cols: cols, rows: rows + 1});
+            socket.emit('resize', {cols: cols, rows: rows + 1});
         });
 
         terminal.onTitleChange(function (event) {
             console.log(event);
         });
+
         window.onresize = function () {
             fitAddon.fit();
         };

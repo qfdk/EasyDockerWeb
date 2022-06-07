@@ -71,7 +71,7 @@ const returnContainersRouter = (io) => {
             req.body.containerVolumeDistination !== '') {
             const src = req.body.containerVolumeSource;
             const dis = req.body.containerVolumeDistination;
-            options['Volumes'] = JSON.parse('{"' + dis + '": {}}');
+            options['Volumes'] = {dis: {}};
             options.HostConfig = {
                 'Binds': [src + ':' + dis],
                 'RestartPolicy': {
@@ -86,9 +86,10 @@ const returnContainersRouter = (io) => {
             req.body.containerPortDistination !== '') {
             const src = req.body.containerPortSource + '/tcp';
             const dis = req.body.containerPortDistination;
-            options['ExposedPorts'] = JSON.parse('{"' + src + '": {}}');
-            const tmp = '{ "' + src + '": [{ "HostPort":"' + dis + '" }]}';
-            options.HostConfig.PortBindings = JSON.parse(tmp);
+            options['ExposedPorts'] = {dis: {}};
+            options.HostConfig.PortBindings = {
+                src: [{HostPort: dis}]
+            };
         }
 
         if (req.body.containerCmd != '') {
@@ -139,6 +140,10 @@ const returnContainersRouter = (io) => {
                 'Tty': true,
                 Cmd: ['/bin/bash'],
             };
+            socket.on('resize', (data) => {
+                container.resize({h: data.rows, w: data.cols}, () => {
+                });
+            });
             container.exec(cmd, (err, exec) => {
                 let options = {
                     'Tty': true,
@@ -159,12 +164,6 @@ const returnContainersRouter = (io) => {
                 }
 
                 exec.start(options, (err, stream) => {
-                    const dimensions = {h, w};
-                    if (dimensions.h != 0 && dimensions.w != 0) {
-                        exec.resize(dimensions, () => {
-                        });
-                    }
-
                     stream.on('data', (chunk) => {
                         socket.emit('show', chunk.toString());
                     });
@@ -173,7 +172,6 @@ const returnContainersRouter = (io) => {
                         if (typeof data !== 'object')
                             stream.write(data);
                     });
-
                 });
             });
         });
