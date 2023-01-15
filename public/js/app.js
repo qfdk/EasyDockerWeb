@@ -31,45 +31,6 @@ $(document).ready(function () {
     }
 });
 
-// function terminal() {
-//     Terminal.applyAddon(attach);
-//     Terminal.applyAddon(fit);
-//     var term = new Terminal({
-//         screenKeys: true,
-//         useStyle: true,
-//         cursorBlink: true,
-//         cursorStyle: 'bar', // 光标样式
-//         fullscreenWin: true,
-//         maximizeWin: true,
-//         screenReaderMode: true,
-//         cols: 128,
-//         theme: {
-//             foreground: 'white', // 字体
-//             background: '#2A2C34', // 背景色
-//             lineHeight: 16,
-//         },
-//     });
-//
-//     term.open(document.getElementById('terminal'));
-//     term.fit();
-//     var id = window.location.pathname.split('/')[3];
-//     var host = window.location.origin;
-//     var socket = io.connect(host);
-//     socket.emit('exec', id, $('#terminal').width(), $('#terminal').height());
-//     term.on('data', (data) => {
-//         socket.emit('cmd', data);
-//     });
-//
-//     socket.on('show', (data) => {
-//         term.write(data);
-//     });
-//
-//     socket.on('end', (status) => {
-//         $('#terminal').empty();
-//         socket.disconnect();
-//     });
-// }
-
 function getContainersCPU() {
     var containers = $('.container-cpu');
     for (var i = 0; i < containers.length; i++) {
@@ -119,8 +80,6 @@ function getContainerRAMInfoById(id) {
 }
 
 function logs() {
-    Terminal.applyAddon(attach);
-    Terminal.applyAddon(fit);
     var term = new Terminal({
         useStyle: true,
         convertEol: true,
@@ -129,9 +88,22 @@ function logs() {
         visualBell: false,
         colors: Terminal.xtermColors
     });
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
 
     term.open(document.getElementById('terminal'));
-    term.fit();
+
+    window.onload = function () {
+        fitAddon.fit();
+    };
+
+    term.onResize(function (event) {
+        var rows = event.rows;
+        var cols = event.cols;
+        console.log('resizing to', {cols: cols, rows: rows + 1});
+        socket.emit('resize', {cols: cols, rows: rows + 1});
+    });
+
     var id = window.location.pathname.split('/')[3];
     var host = window.location.origin;
     var socket = io.connect(host);
@@ -171,7 +143,7 @@ function pullIamges() {
     var host = window.location.origin;
     var socket = io.connect(host);
 
-    window.onresize = function () {
+    window.onload = function () {
         fitAddon.fit();
     };
 
