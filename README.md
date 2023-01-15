@@ -77,11 +77,11 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 ## Sponsor
 <a href="https://www.jetbrains.com/?from=EasyDockerWeb"><img src="images/jetbrains-variant-4.svg" alt="JetBrains" width="200"/></a>
 
-## React.js web ui (beta)
+## React.js web ui (removed)
 
 ```bash
 cd web-ui
-yarn install
+yarn
 yarn start
 ```
 [http://localhost:4000](http://localhost:4000)

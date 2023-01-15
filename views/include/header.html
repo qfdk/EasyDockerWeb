@@ -9,9 +9,31 @@
     <meta content="" name="description">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/bootstrap-select.min.css"/>
-<!--    <link rel="stylesheet" href="/static/css/xterm.css"/>-->
     <link rel="stylesheet" href="/static/css/style.css">
     <link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
+    <!-- for terminal-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.18.0/css/xterm.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xterm@4.18.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-attach@0.6.0/lib/xterm-addon-attach.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-serialize@0.6.2/lib/xterm-addon-serialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-unicode11@0.3.0/lib/xterm-addon-unicode11.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.5.1/lib/xterm-addon-web-links.min.js"></script>
+    <style>
+        div#terminal {
+            background-color: black;
+        }
+
+        .xterm-viewport, .xterm-screen {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .terminal.xterm {
+            padding: 8px;
+        }
+    </style>
 </head>
 
 <body>

@@ -147,19 +147,20 @@ function logs() {
 }
 
 function pullIamges() {
-    Terminal.applyAddon(attach);
-    Terminal.applyAddon(fit);
     var term = new Terminal({
-        useStyle: true,
-        convertEol: true,
-        screenKeys: false,
-        cursorBlink: false,
-        visualBell: false,
-        colors: Terminal.xtermColors
+            useStyle: true,
+            convertEol: true,
+            screenKeys: false,
+            cursorBlink: false,
+            visualBell: false,
+            colors: Terminal.xtermColors
     });
 
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+
     term.open(document.getElementById('terminal'));
-    term.fit();
+
     var imagesName = $('#imageName').val();
     var version = $('#imageVersionName').val();
     if (version) {
@@ -169,6 +170,18 @@ function pullIamges() {
     }
     var host = window.location.origin;
     var socket = io.connect(host);
+
+    window.onresize = function () {
+        fitAddon.fit();
+    };
+
+    term.onResize(function (event) {
+        var rows = event.rows;
+        var cols = event.cols;
+        console.log('resizing to', {cols: cols, rows: rows + 1});
+        socket.emit('resize', {cols: cols, rows: rows + 1});
+    });
+
     socket.emit('pull', imagesName, $('#terminal').width(), $('#terminal').height());
     socket.on('show', (data) => {
         term.write(data);
