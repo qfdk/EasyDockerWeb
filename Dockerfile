@@ -1,5 +1,5 @@
 FROM node:12-alpine
-ADD . /src
+COPY . /src
 
 RUN apk update && apk add bash && \
     cd /src; yarn install && \
