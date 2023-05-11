@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:lts-alpine
 ADD . /src
 
 RUN apk update && apk add bash && \
