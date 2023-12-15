@@ -56,6 +56,7 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 - 系统状态查看
 - 镜像获取
 - 计划使用react重构 https://github.com/qfdk/EasyDockerWeb/tree/react
+- 添加git actions
 
 ## Images
 ![login](./images/login.png)
