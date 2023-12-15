@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "body-parser": "1.20.1",
-    "dockerode": "3.3.4",
+    "dockerode": "^4.0.0",
     "ejs": "^2.5.7",
     "express": "^4.16.4",
     "express-session": "^1.17.1",
