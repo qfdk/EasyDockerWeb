@@ -21,7 +21,7 @@ router.get('/overview', async (req, res, next) => {
  */
 router.get('/containers', async (req, res, next) => {
     try {
-        const listContainers = await docker.listContainers({ all: true });
+        const listContainers = await docker.listContainers({all: true});
         return res.json(listContainers);
     } catch (err) {
         res.json({
@@ -31,65 +31,62 @@ router.get('/containers', async (req, res, next) => {
     }
 });
 
-router.get('/containers/start/:id', (req, res, next) => {
+router.get('/containers/start/:id', async (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.start((err, data) => {
-        if (!err) {
-            res.json({
-                code: 200,
-                msg: 'OK',
-            });
-        } else {
-            res.json({
-                code: 400,
-                msg: err.toString(),
-            });
-        }
-    });
+    try {
+        await container.start();
+        res.json({
+            code: 200,
+            msg: 'OK'
+        });
+    } catch (err) {
+        res.json({
+            code: 400,
+            msg: err.toString()
+        });
+    }
 });
 
-router.get('/containers/stop/:id', (req, res, next) => {
+router.get('/containers/stop/:id', async (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.stop((err, data) => {
-        if (!err) {
-            res.json({
-                code: 200,
-                msg: 'OK',
-            });
-        } else {
-            res.json({
-                code: 400,
-                msg: err.toString(),
-            });
-        }
-    });
+    try {
+        await container.stop();
+        res.json({
+            code: 200,
+            msg: 'OK'
+        });
+    } catch (err) {
+        res.json({
+            code: 400,
+            msg: err.toString()
+        });
+    }
 });
 
 router.get('/containers/remove/:id', (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.remove({ force: true }, (err, data) => {
+    container.remove({force: true}, (err, data) => {
         if (!err) {
             res.json({
                 code: 200,
-                msg: 'OK',
+                msg: 'OK'
             });
         } else {
             res.json({
                 code: 400,
-                msg: err.toString(),
+                msg: err.toString()
             });
         }
     });
 });
 
-router.get('/images', (req, res, next) => {
-    docker.listImages(null, (err, listImages) => {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json(listImages);
-        }
-    });
+router.get('/images', async (req, res, next) => {
+    try {
+        const listImages = await docker.listImages();
+        res.json(listImages);
+    } catch (err) {
+        res.json(err);
+    }
 });
 
 router.get('/images/remove/:id', (req, res, next) => {
@@ -98,7 +95,7 @@ router.get('/images/remove/:id', (req, res, next) => {
         imageId = imageId.split(':')[1];
     }
     const image = docker.getImage(imageId);
-    image.remove({ force: true }, (err, data) => {
+    image.remove({force: true}, (err, data) => {
         if (err) {
             res.json(err);
         } else {
@@ -109,7 +106,7 @@ router.get('/images/remove/:id', (req, res, next) => {
 
 router.get('/search/:name', (req, res, next) => {
     const name = req.params.name;
-    docker.searchImages({ term: name }, (err, data) => {
+    docker.searchImages({term: name}, (err, data) => {
         if (err) throw err;
         res.json(data);
     });

@@ -1,5 +1,0 @@
-<% include include/header.html %>
-<div class="container" data-page="terminal">
-    <div id="terminal"></div>
-</div>
-<% include include/footer.html %>
