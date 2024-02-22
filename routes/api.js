@@ -4,26 +4,31 @@ const Docker = require('dockerode');
 const docker = new Docker();
 
 /* GET  overview. */
-router.get('/overview', (req, res, next) => {
-    docker.info((err, info) => {
-        if (err) {
-            res.json({
-                msg: 'error',
-                message: 'Docker is running ?',
-            });
-        } else {
-            res.json(info);
-        }
-    });
+router.get('/overview', async (req, res, next) => {
+    try {
+        const info = await docker.info();
+        return res.json(info);
+    } catch (err) {
+        res.json({
+            msg: 'error',
+            message: err.toString()
+        });
+    }
 });
 
 /**
  * containers list
  */
-router.get('/containers', (req, res, next) => {
-    docker.listContainers({all: true}, (err, containers) => {
-        res.json(containers);
-    });
+router.get('/containers', async (req, res, next) => {
+    try {
+        const listContainers = await docker.listContainers({ all: true });
+        return res.json(listContainers);
+    } catch (err) {
+        res.json({
+            msg: 'error',
+            message: err.toString()
+        });
+    }
 });
 
 router.get('/containers/start/:id', (req, res, next) => {
@@ -62,7 +67,7 @@ router.get('/containers/stop/:id', (req, res, next) => {
 
 router.get('/containers/remove/:id', (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.remove({force: true}, (err, data) => {
+    container.remove({ force: true }, (err, data) => {
         if (!err) {
             res.json({
                 code: 200,
@@ -93,7 +98,7 @@ router.get('/images/remove/:id', (req, res, next) => {
         imageId = imageId.split(':')[1];
     }
     const image = docker.getImage(imageId);
-    image.remove({force: true}, (err, data) => {
+    image.remove({ force: true }, (err, data) => {
         if (err) {
             res.json(err);
         } else {
@@ -104,7 +109,7 @@ router.get('/images/remove/:id', (req, res, next) => {
 
 router.get('/search/:name', (req, res, next) => {
     const name = req.params.name;
-    docker.searchImages({term: name}, (err, data) => {
+    docker.searchImages({ term: name }, (err, data) => {
         if (err) throw err;
         res.json(data);
     });
