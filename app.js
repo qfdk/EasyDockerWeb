@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const session = require('express-session');
 
-const { checkUser } = require('./middlewares/security');
+const {checkUser} = require('./middlewares/security');
 
 const io = require('socket.io')();
 const favicon = require('serve-favicon');
@@ -35,7 +35,7 @@ app.use(session({
 app.use('/static', express.static(__dirname + '/public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.all('*', (req, res, next) => {
@@ -44,7 +44,7 @@ app.all('*', (req, res, next) => {
         'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
     res.header('Access-Control-Allow-Methods',
         'PUT, POST, GET, DELETE, OPTIONS');
-    if (req.method == 'OPTIONS') {
+    if (req.method === 'OPTIONS') {
         res.send(200); /* speedup options */
     } else {
         next();

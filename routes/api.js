@@ -104,12 +104,14 @@ router.get('/images/remove/:id', (req, res, next) => {
     });
 });
 
-router.get('/search/:name', (req, res, next) => {
+router.get('/search/:name', async (req, res, next) => {
     const name = req.params.name;
-    docker.searchImages({term: name}, (err, data) => {
-        if (err) throw err;
-        res.json(data);
-    });
+    try {
+        const data = await docker.searchImages({term: name});
+        return res.json(data);
+    } catch (e) {
+        return res.json(e);
+    }
 });
 
 module.exports = router;

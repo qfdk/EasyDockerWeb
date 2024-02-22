@@ -15,7 +15,7 @@ const returnContainersRouter = (io) => {
                 res.render('containers',
                     {
                         containers: containers,
-                        images: listImages,
+                        images: listImages
                     });
             });
         });
@@ -54,15 +54,15 @@ const returnContainersRouter = (io) => {
             AttachStderr: true,
             Tty: false,
             HostConfig: {
-                PortBindings: {},
-            },
+                PortBindings: {}
+            }
         };
 
         // name
         if (req.body.containerName !== '') {
             options = {
                 ...options,
-                name: req.body.containerName,
+                name: req.body.containerName
             };
         }
 
@@ -76,8 +76,8 @@ const returnContainersRouter = (io) => {
                 'Binds': [src + ':' + dis],
                 'RestartPolicy': {
                     'Name': req.body.isAlways === 'on' ? 'always' : '',
-                    'MaximumRetryCount': 5,
-                },
+                    'MaximumRetryCount': 5
+                }
             };
         }
 
@@ -111,7 +111,7 @@ const returnContainersRouter = (io) => {
                 //Cmd: ['/bin/sh'],
                 OpenStdin: false,
                 StdinOnce: false,
-                ...options,
+                ...options
             };
             docker.createContainer(runOpt).then(function (container) {
                 return container.start();
@@ -138,7 +138,7 @@ const returnContainersRouter = (io) => {
                 'AttachStderr': true,
                 'AttachStdin': true,
                 'Tty': true,
-                Cmd: ['/bin/bash'],
+                Cmd: ['/bin/bash']
             };
             socket.on('resize', (data) => {
                 container.resize({h: data.rows, w: data.cols}, () => {
@@ -152,7 +152,7 @@ const returnContainersRouter = (io) => {
                     stdout: true,
                     stderr: true,
                     // fix vim
-                    hijack: true,
+                    hijack: true
                 };
 
                 container.wait((err, data) => {
@@ -188,7 +188,7 @@ const returnContainersRouter = (io) => {
                 follow: true,
                 stdout: true,
                 stderr: true,
-                timestamps: false,
+                timestamps: false
             };
 
             const handler = (err, stream) => {
