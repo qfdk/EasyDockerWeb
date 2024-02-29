@@ -12,7 +12,7 @@ app.io = io;
 
 const index = require('./routes/index');
 const api = require('./routes/api');
-const overview = require('./routes/overview')(io);
+const overview = require('./routes/overview');
 const containers = require('./routes/containers')(io);
 const images = require('./routes/images')(io);
 
