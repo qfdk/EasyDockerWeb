@@ -27,16 +27,14 @@ const returnImagesRouter = (io) => {
             // imageSize
             res.locals.imageSize = (str) => {
                 const newSiez = parseInt(str, 10);
-                str = (newSiez / 1000 / 1000).toFixed(2).
-                toString().
-                substring(0, 4);
+                str = (newSiez / 1000 / 1000).toFixed(2).toString().substring(0, 4);
                 if (str.indexOf('.') == 3) {
                     return str.split('.')[0];
                 }
                 return str;
             };
             res.render('images', {
-                images: listImages,
+                images: listImages
             });
         });
     });

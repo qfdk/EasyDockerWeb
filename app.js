@@ -44,7 +44,7 @@ app.all('*', (req, res, next) => {
         'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
     res.header('Access-Control-Allow-Methods',
         'PUT, POST, GET, DELETE, OPTIONS');
-    if (req.method == 'OPTIONS') {
+    if (req.method === 'OPTIONS') {
         res.send(200); /* speedup options */
     } else {
         next();
@@ -74,7 +74,6 @@ app.use((err, req, res, next) => {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-
     // render the error page
     res.status(err.status || 500);
     res.render('error');

@@ -9,9 +9,9 @@ $(document).ready(function () {
         getContainersCPU();
         getContainersRAM();
     }
-    if (codePageCourante == 'terminal') {
-        terminal();
-    }
+    // if (codePageCourante == 'terminal') {
+    //     terminal();
+    // }
     if (codePageCourante == 'logs') {
         logs();
     }
@@ -31,42 +31,10 @@ $(document).ready(function () {
     }
 });
 
-function terminal() {
-    Terminal.applyAddon(attach);
-    Terminal.applyAddon(fit);
-    var term = new Terminal({
-        useStyle: true,
-        convertEol: true,
-        screenKeys: true,
-        cursorBlink: false,
-        visualBell: true,
-        colors: Terminal.xtermColors
-    });
-
-    term.open(document.getElementById('terminal'));
-    term.fit();
-    var id = window.location.pathname.split('/')[3];
-    var host = window.location.origin;
-    var socket = io.connect(host);
-    socket.emit('exec', id, $('#terminal').width(), $('#terminal').height());
-    term.on('data', (data) => {
-        socket.emit('cmd', data);
-    });
-
-    socket.on('show', (data) => {
-        term.write(data);
-    });
-
-    socket.on('end', (status) => {
-        $('#terminal').empty();
-        socket.disconnect();
-    });
-}
-
 function getContainersCPU() {
     var containers = $('.container-cpu');
     for (var i = 0; i < containers.length; i++) {
-        var containerId = $('.container-cpu').eq(i).attr('container-id')
+        var containerId = $('.container-cpu').eq(i).attr('container-id');
         getContainerCPUInfoById(containerId);
     }
 }
@@ -74,7 +42,7 @@ function getContainersCPU() {
 function getContainersRAM() {
     var containers = $('.container-cpu');
     for (var i = 0; i < containers.length; i++) {
-        var containerId = $('.container-ram').eq(i).attr('container-id')
+        var containerId = $('.container-ram').eq(i).attr('container-id');
         getContainerRAMInfoById(containerId);
     }
 }
@@ -102,7 +70,7 @@ function getContainerRAMInfoById(id) {
     socket.on(id, (data) => {
         var json = JSON.parse(data);
         if (json.memory_stats.usage) {
-            var tmp = ((json.memory_stats.usage / json.memory_stats.limit) * 100).toFixed(2)
+            var tmp = ((json.memory_stats.usage / json.memory_stats.limit) * 100).toFixed(2);
             $('.container-ram[container-id=' + id + ']').text(tmp + ' %');
         }
     });
@@ -112,8 +80,6 @@ function getContainerRAMInfoById(id) {
 }
 
 function logs() {
-    Terminal.applyAddon(attach);
-    Terminal.applyAddon(fit);
     var term = new Terminal({
         useStyle: true,
         convertEol: true,
@@ -122,9 +88,22 @@ function logs() {
         visualBell: false,
         colors: Terminal.xtermColors
     });
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
 
     term.open(document.getElementById('terminal'));
-    term.fit();
+
+    window.onload = function () {
+        fitAddon.fit();
+    };
+
+    term.onResize(function (event) {
+        var rows = event.rows;
+        var cols = event.cols;
+        console.log('resizing to', {cols: cols, rows: rows + 1});
+        socket.emit('resize', {cols: cols, rows: rows + 1});
+    });
+
     var id = window.location.pathname.split('/')[3];
     var host = window.location.origin;
     var socket = io.connect(host);
@@ -140,19 +119,20 @@ function logs() {
 }
 
 function pullIamges() {
-    Terminal.applyAddon(attach);
-    Terminal.applyAddon(fit);
     var term = new Terminal({
-        useStyle: true,
-        convertEol: true,
-        screenKeys: false,
-        cursorBlink: false,
-        visualBell: false,
-        colors: Terminal.xtermColors
+            useStyle: true,
+            convertEol: true,
+            screenKeys: false,
+            cursorBlink: false,
+            visualBell: false,
+            colors: Terminal.xtermColors
     });
 
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+
     term.open(document.getElementById('terminal'));
-    term.fit();
+
     var imagesName = $('#imageName').val();
     var version = $('#imageVersionName').val();
     if (version) {
@@ -162,6 +142,18 @@ function pullIamges() {
     }
     var host = window.location.origin;
     var socket = io.connect(host);
+
+    window.onload = function () {
+        fitAddon.fit();
+    };
+
+    term.onResize(function (event) {
+        var rows = event.rows;
+        var cols = event.cols;
+        console.log('resizing to', {cols: cols, rows: rows + 1});
+        socket.emit('resize', {cols: cols, rows: rows + 1});
+    });
+
     socket.emit('pull', imagesName, $('#terminal').width(), $('#terminal').height());
     socket.on('show', (data) => {
         term.write(data);
@@ -177,11 +169,11 @@ function pullIamges() {
 function calculateCPUPercentUnix(json) {
     var previousCPU = json.precpu_stats.cpu_usage.total_usage;
     var previousSystem = json.precpu_stats.system_cpu_usage;
-    var cpuPercent = 0.0
-    var cpuDelta = parseInt(json.cpu_stats.cpu_usage.total_usage) - parseInt(previousCPU)
-    var systemDelta = parseInt(json.cpu_stats.system_cpu_usage) - parseInt(previousSystem)
+    var cpuPercent = 0.0;
+    var cpuDelta = parseInt(json.cpu_stats.cpu_usage.total_usage) - parseInt(previousCPU);
+    var systemDelta = parseInt(json.cpu_stats.system_cpu_usage) - parseInt(previousSystem);
     if (systemDelta > 0.0 && cpuDelta > 0.0) {
-        cpuPercent = (cpuDelta / systemDelta) * parseInt(json.cpu_stats.cpu_usage.percpu_usage.length) * 100.0
+        cpuPercent = (cpuDelta / systemDelta) * 100.0;
     }
     return new Number(cpuPercent).toFixed(2);
 }
@@ -192,8 +184,8 @@ function loading() {
     });
     $('#create').on('click', function () {
         var $btn = $(this).button('loading');
-    })
+    });
     $('#pullImage').on('click', function () {
         var $btn = $(this).button('loading');
-    })
+    });
 }

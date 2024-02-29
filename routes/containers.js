@@ -15,7 +15,7 @@ const returnContainersRouter = (io) => {
                 res.render('containers',
                     {
                         containers: containers,
-                        images: listImages,
+                        images: listImages
                     });
             });
         });
@@ -54,15 +54,15 @@ const returnContainersRouter = (io) => {
             AttachStderr: true,
             Tty: false,
             HostConfig: {
-                PortBindings: {},
-            },
+                PortBindings: {}
+            }
         };
 
         // name
         if (req.body.containerName !== '') {
             options = {
                 ...options,
-                name: req.body.containerName,
+                name: req.body.containerName
             };
         }
 
@@ -71,13 +71,13 @@ const returnContainersRouter = (io) => {
             req.body.containerVolumeDistination !== '') {
             const src = req.body.containerVolumeSource;
             const dis = req.body.containerVolumeDistination;
-            options['Volumes'] = JSON.parse('{"' + dis + '": {}}');
+            options['Volumes'] = {dis: {}};
             options.HostConfig = {
                 'Binds': [src + ':' + dis],
                 'RestartPolicy': {
                     'Name': req.body.isAlways === 'on' ? 'always' : '',
-                    'MaximumRetryCount': 5,
-                },
+                    'MaximumRetryCount': 5
+                }
             };
         }
 
@@ -86,9 +86,10 @@ const returnContainersRouter = (io) => {
             req.body.containerPortDistination !== '') {
             const src = req.body.containerPortSource + '/tcp';
             const dis = req.body.containerPortDistination;
-            options['ExposedPorts'] = JSON.parse('{"' + src + '": {}}');
-            const tmp = '{ "' + src + '": [{ "HostPort":"' + dis + '" }]}';
-            options.HostConfig.PortBindings = JSON.parse(tmp);
+            options['ExposedPorts'] = {dis: {}};
+            options.HostConfig.PortBindings = {
+                src: [{HostPort: dis}]
+            };
         }
 
         if (req.body.containerCmd != '') {
@@ -110,9 +111,9 @@ const returnContainersRouter = (io) => {
                 //Cmd: ['/bin/sh'],
                 OpenStdin: false,
                 StdinOnce: false,
-                ...options,
+                ...options
             };
-            docker.createContainer(runOpt).then(function(container) {
+            docker.createContainer(runOpt).then(function (container) {
                 return container.start();
             }).then((container) => {
                 res.redirect('/containers');
@@ -137,8 +138,12 @@ const returnContainersRouter = (io) => {
                 'AttachStderr': true,
                 'AttachStdin': true,
                 'Tty': true,
-                Cmd: ['/bin/sh'],
+                Cmd: ['/bin/bash']
             };
+            socket.on('resize', (data) => {
+                container.resize({h: data.rows, w: data.cols}, () => {
+                });
+            });
             container.exec(cmd, (err, exec) => {
                 let options = {
                     'Tty': true,
@@ -147,7 +152,7 @@ const returnContainersRouter = (io) => {
                     stdout: true,
                     stderr: true,
                     // fix vim
-                    hijack: true,
+                    hijack: true
                 };
 
                 container.wait((err, data) => {
@@ -159,20 +164,14 @@ const returnContainersRouter = (io) => {
                 }
 
                 exec.start(options, (err, stream) => {
-                    const dimensions = {h, w};
-                    if (dimensions.h != 0 && dimensions.w != 0) {
-                        exec.resize(dimensions, () => {
-                        });
-                    }
-
                     stream.on('data', (chunk) => {
                         socket.emit('show', chunk.toString());
                     });
 
                     socket.on('cmd', (data) => {
-                        stream.write(data);
+                        if (typeof data !== 'object')
+                            stream.write(data);
                     });
-
                 });
             });
         });
@@ -189,7 +188,7 @@ const returnContainersRouter = (io) => {
                 follow: true,
                 stdout: true,
                 stderr: true,
-                timestamps: false,
+                timestamps: false
             };
 
             const handler = (err, stream) => {

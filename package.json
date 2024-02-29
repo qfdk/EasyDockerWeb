@@ -6,10 +6,9 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
-    "babel-preset-react-app": "^9.1.1",
-    "body-parser": "~1.18.2",
-    "dockerode": "^2.5.4",
-    "ejs": "^2.5.7",
+    "body-parser": "1.20.1",
+    "dockerode": "^4.0.2",
+    "ejs": "3.1.7",
     "express": "^4.16.4",
     "express-session": "^1.17.1",
     "express-status-monitor": "^1.2.8",
@@ -17,6 +16,6 @@
     "socket.io": "2.4.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^3.0.3"
   }
 }

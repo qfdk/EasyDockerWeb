@@ -56,6 +56,7 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 - 系统状态查看
 - 镜像获取
 - 计划使用react重构 https://github.com/qfdk/EasyDockerWeb/tree/react
+- 添加git actions
 
 ## Images
 ![login](./images/login.png)
@@ -77,11 +78,11 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock easy-docker
 ## Sponsor
 <a href="https://www.jetbrains.com/?from=EasyDockerWeb"><img src="images/jetbrains-variant-4.svg" alt="JetBrains" width="200"/></a>
 
-## React.js web ui (beta)
+## React.js web ui (removed)
 
 ```bash
 cd web-ui
-yarn install
+yarn
 yarn start
 ```
 [http://localhost:4000](http://localhost:4000)

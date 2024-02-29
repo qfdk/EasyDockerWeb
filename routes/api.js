@@ -4,60 +4,63 @@ const Docker = require('dockerode');
 const docker = new Docker();
 
 /* GET  overview. */
-router.get('/overview', (req, res, next) => {
-    docker.info((err, info) => {
-        if (err) {
-            res.json({
-                msg: 'error',
-                message: 'Docker is running ?',
-            });
-        } else {
-            res.json(info);
-        }
-    });
+router.get('/overview', async (req, res, next) => {
+    try {
+        const info = await docker.info();
+        return res.json(info);
+    } catch (err) {
+        res.json({
+            msg: 'error',
+            message: err.toString()
+        });
+    }
 });
 
 /**
  * containers list
  */
-router.get('/containers', (req, res, next) => {
-    docker.listContainers({all: true}, (err, containers) => {
-        res.json(containers);
-    });
+router.get('/containers', async (req, res, next) => {
+    try {
+        const listContainers = await docker.listContainers({all: true});
+        return res.json(listContainers);
+    } catch (err) {
+        res.json({
+            msg: 'error',
+            message: err.toString()
+        });
+    }
 });
 
-router.get('/containers/start/:id', (req, res, next) => {
+router.get('/containers/start/:id', async (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.start((err, data) => {
-        if (!err) {
-            res.json({
-                code: 200,
-                msg: 'OK',
-            });
-        } else {
-            res.json({
-                code: 400,
-                msg: err.toString(),
-            });
-        }
-    });
+    try {
+        await container.start();
+        res.json({
+            code: 200,
+            msg: 'OK'
+        });
+    } catch (err) {
+        res.json({
+            code: 400,
+            msg: err.toString()
+        });
+    }
 });
 
-router.get('/containers/stop/:id', (req, res, next) => {
+router.get('/containers/stop/:id', async (req, res, next) => {
     const container = docker.getContainer(req.params.id);
-    container.stop((err, data) => {
-        if (!err) {
-            res.json({
-                code: 200,
-                msg: 'OK',
-            });
-        } else {
-            res.json({
-                code: 400,
-                msg: err.toString(),
-            });
-        }
-    });
+    try {
+        await container.stop();
+        res.json({
+            code: 200,
+            msg: 'OK'
+        });
+    } catch (err) {
+        res.json({
+            code: 400,
+            msg: err.toString()
+        });
+    }
 });
 
 router.get('/containers/remove/:id', (req, res, next) => {
@@ -66,25 +69,24 @@ router.get('/containers/remove/:id', (req, res, next) => {
         if (!err) {
             res.json({
                 code: 200,
-                msg: 'OK',
+                msg: 'OK'
             });
         } else {
             res.json({
                 code: 400,
-                msg: err.toString(),
+                msg: err.toString()
             });
         }
     });
 });
 
-router.get('/images', (req, res, next) => {
-    docker.listImages(null, (err, listImages) => {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json(listImages);
-        }
-    });
+router.get('/images', async (req, res, next) => {
+    try {
+        const listImages = await docker.listImages();
+        res.json(listImages);
+    } catch (err) {
+        res.json(err);
+    }
 });
 
 router.get('/images/remove/:id', (req, res, next) => {
@@ -102,12 +104,14 @@ router.get('/images/remove/:id', (req, res, next) => {
     });
 });
 
-router.get('/search/:name', (req, res, next) => {
+router.get('/search/:name', async (req, res, next) => {
     const name = req.params.name;
-    docker.searchImages({term: name}, (err, data) => {
-        if (err) throw err;
-        res.json(data);
-    });
+    try {
+        const data = await docker.searchImages({term: name});
+        return res.json(data);
+    } catch (e) {
+        return res.json(e);
+    }
 });
 
 module.exports = router;
