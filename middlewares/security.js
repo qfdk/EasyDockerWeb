@@ -1,13 +1,11 @@
-const config = require('../config');
-
 const checkUser = (req, res, next) => {
     res.locals.isLogin = false;
     if (req.session.isLogin) {
         res.locals.isLogin = true;
         next();
     } else {
-        const username = config.username,
-            password = config.password;
+        const username = process.env.EDW_USERNAME,
+            password = process.env.EDW_PASSWORD;
         if (req.body.username === username && req.body.password === password) {
             req.session.isLogin = true;
             res.redirect('/');
