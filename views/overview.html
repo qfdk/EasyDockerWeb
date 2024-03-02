@@ -1,86 +1,85 @@
-<% include include/header.html %>
-    <div class="container" data-page="overview">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">OS</h3>
-                    </div>
-                    <div class="panel-body">
-                        <%= info.OperatingSystem %>
-                    </div>
+<%- include('include/header.html') %>
+<div class="container" data-page="overview">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">OS</h3>
+                </div>
+                <div class="panel-body">
+                    <%= info.OperatingSystem %>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Docker version</h3>
-                    </div>
-                    <div class="panel-body">
-                        <%= info.ServerVersion %>
-                    </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Docker version</h3>
                 </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">CPU</h3>
-                    </div>
-                    <div class="panel-body">
-                        <%= info.NCPU %>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Name</h3>
-                    </div>
-                    <div class="panel-body">
-                        <%= info.Name %>
-                    </div>
+                <div class="panel-body">
+                    <%= info.ServerVersion %>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="panel panel-success">
-                    <a href="/containers" class="panel-heading panel-title btn btn-success btn-sm" style="width: 100%;">Containers</a>
-                    <div class="panel-body">
-                        <div class="col-md-4">
-                            <p class="text-success">Running :
-                                <%= info.ContainersRunning %>
-                            </p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="text-warning">Paused :
-                                <%= info.ContainersPaused %>
-                            </p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="text-danger">Stopped :
-                                <%= info.ContainersStopped %>
-                            </p>
-                        </div>
-                    </div>
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">CPU</h3>
+                </div>
+                <div class="panel-body">
+                    <%= info.NCPU %>
                 </div>
             </div>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Name</h3>
+                </div>
+                <div class="panel-body">
+                    <%= info.Name %>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <div class="col-md-6">
-                <div class="panel panel-success">
-                    <a href="/images" class="panel-heading panel-title btn btn-success btn-sm" style="width: 100%;">Images</a>
-                    <div class="panel-body">
-                        <p class="text-center">
-                            <%= info.Images %>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-success">
+                <a href="/containers" class="panel-heading panel-title btn btn-success btn-sm" style="width: 100%;">Containers</a>
+                <div class="panel-body">
+                    <div class="col-md-4">
+                        <p class="text-success">Running :
+                            <%= info.ContainersRunning %>
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-warning">Paused :
+                            <%= info.ContainersPaused %>
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-danger">Stopped :
+                            <%= info.ContainersStopped %>
                         </p>
                     </div>
                 </div>
             </div>
-
-
         </div>
 
+        <div class="col-md-6">
+            <div class="panel panel-success">
+                <a href="/images" class="panel-heading panel-title btn btn-success btn-sm"
+                   style="width: 100%;">Images</a>
+                <div class="panel-body">
+                    <p class="text-center">
+                        <%= info.Images %>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-    <% include include/footer.html %>
+
+</div>
+<%- include('include/footer.html') %>
