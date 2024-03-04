@@ -1,26 +1,32 @@
-<%- include('include/header.html') %>
-<div class="container" data-page="login">
-    <div class="jumbotron">
-        <h3>Easy Docker Web Login page</h3>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>EasyDockerWeb</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 dark:bg-gray-800">
+<div class="h-full sm:min-h-screen w-full flex flex-col items-center justify-center p-4 mt-20 sm:mt-0">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full sm:w-96 mt-10 sm:mt-0">
+        <h1 class="sm:block text-2xl font-bold mb-8">EasyDockerWeb</h1>
+        <form action="" method="post">
+            <div class="mb-4">
+                <label for="username" class="sm:block text-sm font-medium text-gray-700 mb-2">Username:</label>
+                <input type="text" name="username" id="username" placeholder="" required
+                       class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base p-2 bg-gray-100">
+            </div>
+            <div class="mb-6">
+                <label for="password" class="sm:block text-sm font-medium text-gray-700 mb-2">Password:</label>
+                <input type="password" name="password" id="password" placeholder="" required
+                       class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base p-2 bg-gray-100">
+            </div>
+            <button type="submit"
+                    class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Login
+            </button>
+        </form>
     </div>
-    <form class="form-horizontal col-md-6" action="" method="post">
-        <div class="form-group">
-            <label for="username" class="col-sm-2 control-label">Username:</label>
-            <div class="col-sm-10">
-                <input type="text" class="form-control" name="username" id="username" value="">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="password" class="col-sm-2 control-label">Password:</label>
-            <div class="col-sm-10">
-                <input type="password" class="form-control" name="password" id="password">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-        </div>
-    </form>
 </div>
-<%- include('include/footer.html') %>
+</body>
+</html>
+
