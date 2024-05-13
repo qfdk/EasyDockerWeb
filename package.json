@@ -9,13 +9,13 @@
   "dependencies": {
     "body-parser": "1.20.1",
     "dockerode": "^4.0.2",
+    "dotenv": "^16.4.5",
     "ejs": "3.1.7",
     "express": "^4.16.4",
     "express-session": "^1.17.1",
     "express-status-monitor": "^1.2.8",
     "serve-favicon": "^2.4.5",
-    "socket.io": "2.4.1",
-    "dotenv": "^16.4.5"
+    "socket.io": "2.4.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
