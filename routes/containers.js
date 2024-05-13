@@ -84,7 +84,6 @@ const returnContainersRouter = (io) => {
         // port
         if (req.body.containerPortSource !== '' &&
             req.body.containerPortDistination !== '') {
-            const src = req.body.containerPortSource + '/tcp';
             const dis = req.body.containerPortDistination;
             options['ExposedPorts'] = {dis: {}};
             options.HostConfig.PortBindings = {
@@ -92,9 +91,8 @@ const returnContainersRouter = (io) => {
             };
         }
 
-        if (req.body.containerCmd != '') {
+        if (req.body.containerCmd !== '') {
             options.Cmd = ['/bin/sh', '-c', req.body.containerCmd];
-            // console.log(options)
             docker.createContainer(options, (err, container) => {
                 if (err) throw err;
                 container.start((err, data) => {
