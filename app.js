@@ -4,34 +4,17 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
-const session = require('express-session');
-
-const {checkUser} = require('./middlewares/security');
-
-const io = require('socket.io')();
 const favicon = require('serve-favicon');
-app.io = io;
 
-const index = require('./routes/index');
-const api = require('./routes/api');
-const overview = require('./routes/overview');
-const containers = require('./routes/containers')(io);
-const images = require('./routes/images')(io);
+const publicRoute = require('./routes/public');
+const privateRoute = require('./routes/private');
+const {verifyToken} = require('./middlewares/security');
+const {logger} = require('./utils/logger');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
-
-app.use(session({
-    saveUninitialized: false,
-    resave: false,
-    secret: 'easy-docker-web',
-    cookie: {
-        maxAge: 365 * 24 * 60 * 60 * 1000,
-        expires: false
-    }
-}));
 
 // public files
 app.use('/static', express.static(__dirname + '/public'));
@@ -53,16 +36,13 @@ app.all('*', (req, res, next) => {
     }
 });
 
-app.use(checkUser);
 app.use((req, res, next) => {
-    res.locals.isLogin = req.session.isLogin || false;
+    logger.info(`[${req.method}] ${req.originalUrl}`);
     next();
 });
-app.use('/', index);
-app.use('/api', api);
-app.use('/overview', overview);
-app.use('/containers', containers);
-app.use('/images', images);
+app.use(publicRoute);
+app.use(verifyToken);
+app.use(privateRoute);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -78,7 +58,7 @@ app.use((err, req, res, next) => {
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.json({message: err.message});
 });
 
 module.exports = app;
