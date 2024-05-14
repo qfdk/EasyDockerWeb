@@ -18,7 +18,7 @@ const verifyToken = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => { // 验证token
         if (err) {
-            return res.status(401).send({message: 'Unauthorized!'});
+            return res.status(401).send({message: 'Unauthorized!', err});
         }
         req.user = user;
         return next();
