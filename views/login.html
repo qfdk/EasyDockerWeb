@@ -3,30 +3,95 @@
 <head>
     <title>EasyDockerWeb</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta content="Docker UI web" name="keywords">
+    <meta content="Web interface for Docker management" name="description">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/modern-style.css">
+    <link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .login-container {
+            max-width: 400px;
+            width: 90%;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-control {
+            height: 45px;
+            border-radius: 4px;
+            box-shadow: none;
+            border: 1px solid #dfe4ea;
+            background-color: #f1f2f6;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        .btn-login {
+            background-color: #3498db;
+            border-color: #3498db;
+            color: white;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn-login:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-800">
-<div class="h-full sm:min-h-screen w-full flex flex-col items-center justify-center p-4 mt-20 sm:mt-0">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full sm:w-96 mt-10 sm:mt-0">
-        <h1 class="sm:block text-2xl font-bold mb-8">EasyDockerWeb</h1>
+<body>
+    <div class="login-container">
+        <h1 class="login-title">EasyDockerWeb</h1>
         <form action="" method="post">
-            <div class="mb-4">
-                <label for="username" class="sm:block text-sm font-medium text-gray-700 mb-2">Username:</label>
-                <input type="text" name="username" id="username" placeholder="" required
-                       class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base p-2 bg-gray-100">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" class="form-control" required>
             </div>
-            <div class="mb-6">
-                <label for="password" class="sm:block text-sm font-medium text-gray-700 mb-2">Password:</label>
-                <input type="password" name="password" id="password" placeholder="" required
-                       class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base p-2 bg-gray-100">
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" class="form-control" required>
             </div>
-            <button type="submit"
-                    class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Login
-            </button>
+            <button type="submit" class="btn btn-login">Login</button>
         </form>
     </div>
-</div>
+
+    <!-- JavaScript Resources -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
 </body>
 </html>
 

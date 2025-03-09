@@ -1,0 +1,207 @@
+/* Modern Style for EasyDockerWeb */
+
+/* Base Styles */
+body {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    transition: all 0.3s ease;
+}
+
+/* Navbar Styling */
+.navbar-inverse {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-nav > li > a {
+    color: #ecf0f1;
+    transition: color 0.3s ease;
+}
+
+.navbar-inverse .navbar-brand:hover,
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: #3498db;
+}
+
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:focus,
+.navbar-inverse .navbar-nav > .active > a:hover {
+    background-color: #34495e;
+    color: #3498db;
+}
+
+/* Card Styling */
+.panel {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+    border: none;
+}
+
+.panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.panel-heading {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 15px;
+}
+
+.panel-body {
+    padding: 20px;
+}
+
+/* Button Styling */
+.btn {
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin: 3px;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+}
+
+.btn-success:hover, .btn-success:focus {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-danger:hover, .btn-danger:focus {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+/* Table Styling */
+.table-responsive {
+    border: none;
+    margin-bottom: 20px;
+}
+
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table > thead > tr > th {
+    background-color: #f1f2f6;
+    border-bottom: 2px solid #dfe4ea;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Terminal Styling */
+div#terminal {
+    background-color: #2d3436;
+    height: 400px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Footer Styling */
+footer {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+    margin-top: 30px;
+    border-top: 1px solid #e9ecef;
+    color: #6c757d;
+}
+
+footer strong {
+    color: #495057;
+}
+
+/* Icon Styling */
+.icon-large {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #6c757d;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .panel {
+        margin-bottom: 15px;
+    }
+    
+    .btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .table-responsive {
+        margin-bottom: 0;
+    }
+    
+    .btn-xs {
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+    
+    .panel-body {
+        padding: 15px;
+    }
+}
+
+/* Equal Height Cards */
+.equal-height-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.equal-height-row > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
+
+.full-height {
+    height: 100%;
+}
+
+/* Status Labels */
+.label {
+    font-size: 85%;
+    font-weight: 500;
+    padding: 0.3em 0.6em;
+    border-radius: 3px;
+}
+
+/* Container Stats */
+.container-stats {
+    font-family: 'Courier New', monospace;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 4px solid #3498db;
+}

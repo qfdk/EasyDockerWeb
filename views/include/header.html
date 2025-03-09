@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/bootstrap-select.min.css"/>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/modern-style.css">
     <link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
     <!-- Terminal styling -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.18.0/css/xterm.min.css">
@@ -55,6 +56,42 @@
             .table-responsive { margin-bottom: 0; }
             .btn-xs { padding: 3px 6px; }
         }
+        
+        /* 添加导航栏Logo样式 */
+        .navbar-brand-logo {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* 添加navbar-brand样式以确保logo和文字对齐 */
+        .navbar-brand {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            height: 50px;
+        }
+        
+        /* 改进导航栏样式 */
+        .navbar-inverse .navbar-nav > li > a {
+            padding: 15px 20px;
+            font-weight: 500;
+        }
+        
+        /* 添加活动指示器 */
+        .navbar-inverse .navbar-nav > .active > a:after {
+            content: '';
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background-color: #3498db;
+        }
     </style>
 </head>
 <body>
@@ -67,17 +104,20 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Docker Web</a>
+            <a class="navbar-brand" href="/">
+                <img src="/static/img/docker-icon.png" alt="Docker" class="navbar-brand-logo">
+                Docker Web
+            </a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
-                <li id="overviewNav"><a href="/overview">Overview</a></li>
-                <li id="containersNav"><a href="/containers">Containers</a></li>
-                <li id="imagesNav"><a href="/images">Images</a></li>
+                <li id="overviewNav"><a href="/overview"><i class="glyphicon glyphicon-dashboard"></i> Overview</a></li>
+                <li id="containersNav"><a href="/containers"><i class="glyphicon glyphicon-th-list"></i> Containers</a></li>
+                <li id="imagesNav"><a href="/images"><i class="glyphicon glyphicon-hdd"></i> Images</a></li>
             </ul>
             <% if(isLogin){ %>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/logout">Logout</a></li>
+                <li><a href="/logout"><i class="glyphicon glyphicon-log-out"></i> Logout</a></li>
             </ul>
             <%}%>
         </div>
