@@ -10,51 +10,156 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/modern-style.css">
     <link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             margin: 0;
             padding: 0;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
         }
+        
+        body:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/static/img/hero-bg.jpg') no-repeat center center;
+            background-size: cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
         .login-container {
             max-width: 400px;
             width: 90%;
-            padding: 30px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+            z-index: 1;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         .login-container:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
         }
-        .login-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            color: #2c3e50;
+        
+        .logo-container {
             text-align: center;
-        }
-        .form-group {
             margin-bottom: 20px;
         }
+        
+        .logo-container img {
+            height: 60px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .login-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: #3498db;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .login-container:hover .login-title:after {
+            width: 100px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
         .form-control {
-            height: 45px;
-            border-radius: 4px;
+            height: 50px;
+            border-radius: 0 8px 8px 0;
             box-shadow: none;
             border: 1px solid #dfe4ea;
             background-color: #f1f2f6;
             transition: all 0.3s ease;
+            font-size: 15px;
         }
+        
         .form-control:focus {
             border-color: #3498db;
             box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+            background-color: #ffffff;
         }
+        
+        .input-group-addon {
+            background-color: #f1f2f6;
+            border: 1px solid #dfe4ea;
+            border-right: none;
+            color: #7f8c8d;
+            border-radius: 8px 0 0 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group-addon i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .form-control:focus + .input-group-addon,
+        .input-group:focus-within .input-group-addon {
+            color: #3498db;
+            border-color: #3498db;
+        }
+        
+        .input-group {
+            width: 100%;
+        }
+        
+        label {
+            font-weight: 500;
+            color: #34495e;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
         .btn-login {
             background-color: #3498db;
             border-color: #3498db;
@@ -62,36 +167,108 @@
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 10px 0;
-            border-radius: 4px;
+            padding: 12px 0;
+            border-radius: 8px;
             transition: all 0.3s ease;
             width: 100%;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .btn-login:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .btn-login:hover:before {
+            left: 100%;
+        }
+        
         .btn-login:hover {
             background-color: #2980b9;
             border-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .version-info {
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 20px;
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .logo-container img {
+                height: 50px;
+            }
+            
+            .login-title {
+                font-size: 24px;
+            }
+            
+            .form-control {
+                height: 45px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
+        <div class="logo-container">
+            <img src="/static/img/docker-icon.png" alt="Docker Logo">
+        </div>
         <h1 class="login-title">EasyDockerWeb</h1>
         <form action="" method="post">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" class="form-control" required>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fas fa-user"></i></span>
+                    <input type="text" name="username" id="username" class="form-control" required autocomplete="username" placeholder="请输入用户名">
+                </div>
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fas fa-lock"></i></span>
+                    <input type="password" name="password" id="password" class="form-control" required autocomplete="current-password" placeholder="请输入密码">
+                </div>
             </div>
-            <button type="submit" class="btn btn-login">Login</button>
+            <button type="submit" class="btn btn-login">登 录</button>
         </form>
     </div>
+    
+    <div class="version-info">EasyDockerWeb © 2023</div>
 
     <!-- JavaScript Resources -->
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 添加表单提交动画效果
+            $('form').on('submit', function() {
+                $('.btn-login').html('<i class="fas fa-spinner fa-spin"></i> 登录中...');
+            });
+            
+            // 自动聚焦用户名输入框
+            $('#username').focus();
+        });
+    </script>
 </body>
 </html>
 
