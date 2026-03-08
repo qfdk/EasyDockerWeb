@@ -27,7 +27,8 @@
                     </thead>
                     <tbody>
                     <% if(containers && containers.length > 0){ %>
-                    <% containers.forEach(function(container,index){ %>
+                    <%
+                    function renderRow(container) { %>
                     <tr>
                         <td class="text-break"><%= formatName(container.Names) %></td>
                         <td class="text-break"><%= container.Image %></td>
@@ -80,6 +81,27 @@
                             </div>
                         </td>
                     </tr>
+                    <% } %>
+                    <% if(standalone.length > 0) { %>
+                    <tr class="group-header">
+                        <td colspan="8">
+                            <span class="glyphicon glyphicon-th-large"></span>
+                            <strong>Standalone</strong>
+                            <span class="label label-default"><%= standalone.length %></span>
+                        </td>
+                    </tr>
+                    <% standalone.forEach(function(container) { renderRow(container); }) %>
+                    <% } %>
+                    <% Object.keys(composeGroups).forEach(function(project, idx) { %>
+                    <tr class="group-header" style="cursor: pointer;" data-group="compose-<%= idx %>">
+                        <td colspan="8">
+                            <span class="glyphicon glyphicon-chevron-down toggle-icon"></span>
+                            <span class="glyphicon glyphicon-link"></span>
+                            <strong>Compose: <%= project %></strong>
+                            <span class="label label-info"><%= composeGroups[project].length %></span>
+                        </td>
+                    </tr>
+                    <% composeGroups[project].forEach(function(container) { renderRow(container); }) %>
                     <% }) %>
                     <% } else { %>
                     <tr>
@@ -185,7 +207,13 @@
                 <h4 class="modal-title" id="commandModalLabel">Command</h4>
             </div>
             <div class="modal-body">
-                <pre id="commandContent" style="white-space: pre-wrap; word-break: break-all;"></pre>
+                <div style="position: relative;">
+                    <span id="copyCommand" style="position: absolute; top: 8px; right: 10px; cursor: pointer; color: #999; font-size: 14px;"
+                          title="Copy">
+                        <span class="glyphicon glyphicon-copy"></span>
+                    </span>
+                    <pre id="commandContent" style="white-space: pre-wrap; word-break: break-all; padding-right: 30px;"></pre>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -198,5 +226,22 @@
     $('#commandModal').on('show.bs.modal', function (e) {
         var command = $(e.relatedTarget).data('command');
         $('#commandContent').text(command);
+        $('#copyCommand').html('<span class="glyphicon glyphicon-copy"></span>').css('color', '#999');
+    });
+    $('#copyCommand').on('click', function () {
+        var $btn = $(this);
+        navigator.clipboard.writeText($('#commandContent').text()).then(function () {
+            $btn.html('<span class="glyphicon glyphicon-ok"></span>').css('color', '#2ecc71');
+            setTimeout(function () {
+                $btn.html('<span class="glyphicon glyphicon-copy"></span>').css('color', '#999');
+            }, 2000);
+        });
+    });
+    $('.group-header[data-group]').on('click', function () {
+        var $header = $(this);
+        var $rows = $header.nextUntil('.group-header');
+        var $icon = $header.find('.toggle-icon');
+        $rows.toggle();
+        $icon.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
     });
 </script>

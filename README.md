@@ -1,16 +1,26 @@
 # EasyDockerWeb
 
-A simple Web UI for Docker using `xterm.js`, `Node.js` and `Socket.io`.
-
-With this solution you will be able to create your own SAS service.
+A simple Web UI for Docker using `xterm.js`, `Node.js` and `Socket.IO`.
 
 Features:
-- Container management (create, delete, start, stop)
-- Interactive terminal
-- Log viewer
-- System status monitoring
+- Container management (create, start, stop, remove)
+- Compose / Standalone container grouping with collapsible sections
+- Interactive terminal (xterm.js)
+- Real-time log viewer
+- System overview dashboard
 - Image search and pull
 - Simple authentication
+
+## Tech Stack
+
+| Component | Version |
+|-----------|---------|
+| Node.js   | LTS     |
+| Express   | 4.x     |
+| Socket.IO | 4.x     |
+| EJS       | 5.x     |
+| Dockerode | 4.x     |
+| xterm.js  | 4.x     |
 
 ## Quick Start
 
@@ -66,13 +76,14 @@ pnpm start
 
 ## 中文说明
 
-简单的 docker 管理程序，使用了 express socket.io 来实现前后端通讯。
+简单的 Docker 管理工具，基于 Express + Socket.IO 实现前后端通讯。
 
 功能特点：
-- 容器增删改查
-- 容器交互终端
-- 日志查看
-- 系统状态监控
+- 容器管理（创建、启动、停止、删除）
+- Compose / 独立容器分组显示，支持折叠
+- 交互式终端（xterm.js）
+- 实时日志查看
+- 系统概览面板
 - 镜像搜索和拉取
 - 简单的身份验证
 

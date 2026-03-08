@@ -13,10 +13,25 @@ const returnContainersRouter = (io) => {
             };
             const stateOrder = {running: 0, created: 1, exited: 2};
             containers.sort((a, b) => (stateOrder[a.State] ?? 3) - (stateOrder[b.State] ?? 3));
+
+            const groups = {};
+            const standalone = [];
+            containers.forEach((c) => {
+                const project = c.Labels && c.Labels['com.docker.compose.project'];
+                if (project) {
+                    if (!groups[project]) groups[project] = [];
+                    groups[project].push(c);
+                } else {
+                    standalone.push(c);
+                }
+            });
+
             docker.listImages(null, (err, listImages) => {
                 res.render('containers',
                     {
                         containers: containers,
+                        composeGroups: groups,
+                        standalone: standalone,
                         images: listImages
                     });
             });

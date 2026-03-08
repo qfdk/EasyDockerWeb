@@ -206,6 +206,20 @@ footer strong {
     cursor: pointer;
 }
 
+/* Container Group Headers */
+.group-header td {
+    background-color: #ecf0f1;
+    padding: 8px 12px;
+    font-size: 13px;
+    border-left: 3px solid #3498db;
+}
+
+.group-header .label {
+    margin-left: 6px;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
 /* Container Stats */
 .container-stats {
     font-family: 'Courier New', monospace;
