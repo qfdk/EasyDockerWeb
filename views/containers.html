@@ -31,7 +31,7 @@
                     <tr>
                         <td class="text-break"><%= formatName(container.Names) %></td>
                         <td class="text-break"><%= container.Image %></td>
-                        <td class="text-break"><%= container.Command %></td>
+                        <td class="command-cell" data-toggle="modal" data-target="#commandModal" data-command="<%= container.Command %>"><%= container.Command %></td>
                         <td>
                             <% if(container.Ports && container.Ports[0]){ %>
                             [TCP] <%= container.Ports[0].PrivatePort %>
@@ -174,4 +174,29 @@
         </div>
     </div>
 </div>
+<!-- Command Detail Modal -->
+<div class="modal fade" id="commandModal" tabindex="-1" role="dialog" aria-labelledby="commandModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="commandModalLabel">Command</h4>
+            </div>
+            <div class="modal-body">
+                <pre id="commandContent" style="white-space: pre-wrap; word-break: break-all;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <%- include('include/footer.html') %>
+<script>
+    $('#commandModal').on('show.bs.modal', function (e) {
+        var command = $(e.relatedTarget).data('command');
+        $('#commandContent').text(command);
+    });
+</script>

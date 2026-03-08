@@ -11,6 +11,8 @@ const returnContainersRouter = (io) => {
             res.locals.formatName = (str) => {
                 return str[0].split('/')[1];
             };
+            const stateOrder = {running: 0, created: 1, exited: 2};
+            containers.sort((a, b) => (stateOrder[a.State] ?? 3) - (stateOrder[b.State] ?? 3));
             docker.listImages(null, (err, listImages) => {
                 res.render('containers',
                     {

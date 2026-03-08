@@ -197,6 +197,15 @@ footer strong {
     border-radius: 3px;
 }
 
+/* Command Cell Truncation */
+.command-cell {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
 /* Container Stats */
 .container-stats {
     font-family: 'Courier New', monospace;
