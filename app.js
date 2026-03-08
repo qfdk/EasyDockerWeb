@@ -1,14 +1,14 @@
-require('dotenv').config();
+require('dotenv').config({quiet: true});
 
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
 const app = express();
 const session = require('express-session');
+const {Server} = require('socket.io');
 
 const {checkUser} = require('./middlewares/security');
 
-const io = require('socket.io')();
+const io = new Server({cors: {origin: '*'}});
 const favicon = require('serve-favicon');
 app.io = io;
 
@@ -36,8 +36,8 @@ app.use(session({
 // public files
 app.use('/static', express.static(__dirname + '/public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.all('*', (req, res, next) => {
@@ -47,7 +47,7 @@ app.all('*', (req, res, next) => {
     res.header('Access-Control-Allow-Methods',
         'PUT, POST, GET, DELETE, OPTIONS');
     if (req.method === 'OPTIONS') {
-        res.send(200); /* speedup options */
+        res.sendStatus(200);
     } else {
         next();
     }
