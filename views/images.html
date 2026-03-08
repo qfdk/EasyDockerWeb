@@ -5,6 +5,9 @@
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modelImage">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Pull image
             </button>
+            <button type="button" class="btn btn-danger" id="batchDeleteBtn" style="display:none;" onclick="batchDelete()">
+                <span class="glyphicon glyphicon-trash"></span> Delete Selected (<span id="selectedCount">0</span>)
+            </button>
             <hr>
         </div>
     </div>
@@ -15,29 +18,43 @@
                 <table class="table table-bordered table-hover">
                     <thead>
                     <tr>
-                        <th style="width: 40%">Repository</th>
-                        <th style="width: 20%">Tag</th>
-                        <th style="width: 20%">Size</th>
-                        <th style="width: 20%">Action</th>
+                        <th style="width: 4%"><input type="checkbox" id="selectAll"></th>
+                        <th style="width: 30%">Repository</th>
+                        <th style="width: 15%">Tag</th>
+                        <th style="width: 11%">Size</th>
+                        <th style="width: 10%">Status</th>
+                        <th style="width: 30%">Action</th>
                     </tr>
                     </thead>
                     <tbody>
                     <% if(images && images.length > 0){ %>
-                    <% images.forEach(function(image,index){ %>
+                    <% images.forEach(function(image,index){
+                        var inUse = usedImageIds.indexOf(image.Id) !== -1;
+                    %>
                     <tr>
+                        <td><input type="checkbox" class="image-check" value="<%= image.Id %>" <% if(inUse){ %>disabled<% } %>></td>
                         <td><%= imageName(image.RepoTags) %></td>
                         <td><%= imageTag(image.RepoTags) %></td>
                         <td><%= imageSize(image.Size) %> MB</td>
                         <td>
+                            <% if(inUse){ %>
+                            <span class="label label-success">In Use</span>
+                            <% } else { %>
+                            <span class="label label-default">Unused</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if(!inUse){ %>
                             <a class="btn btn-danger btn-xs" href="/images/remove/<%= image.Id %>">
                                 <span class="glyphicon glyphicon-trash"></span> Remove
                             </a>
+                            <% } %>
                         </td>
                     </tr>
                     <% }) %>
                     <% } else { %>
                     <tr>
-                        <td colspan="4" class="text-center">No images found</td>
+                        <td colspan="6" class="text-center">No images found</td>
                     </tr>
                     <% } %>
                     </tbody>
@@ -48,7 +65,7 @@
 </div>
 
 <!-- Pull Image Modal -->
-<div class="modal fade" id="modelImage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="modelImage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -73,7 +90,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <div id="terminal" style="height: 300px; overflow: auto;"></div>
+                    <div id="terminal" style="height: 300px;"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -83,4 +100,77 @@
         </div>
     </div>
 </div>
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-center" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #e74c3c; border-color: #e74c3c;">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-trash"></span> Confirm Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="deleteCancelBtn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteConfirmBtn">
+                    <span class="glyphicon glyphicon-trash"></span> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <%- include('include/footer.html') %>
+<script>
+    function updateCount() {
+        var count = $('.image-check:checked').length;
+        $('#selectedCount').text(count);
+        if (count >= 2) {
+            $('#batchDeleteBtn').show();
+        } else {
+            $('#batchDeleteBtn').hide();
+        }
+    }
+    $('#selectAll').on('change', function () {
+        $('.image-check:not(:disabled)').prop('checked', this.checked);
+        updateCount();
+    });
+    $(document).on('change', '.image-check', function () {
+        var total = $('.image-check:not(:disabled)').length;
+        var checked = $('.image-check:checked').length;
+        $('#selectAll').prop('checked', total > 0 && total === checked);
+        updateCount();
+    });
+    function batchDelete() {
+        var ids = $('.image-check:checked').map(function () { return this.value; }).get();
+        if (ids.length === 0) return;
+        $('#deleteConfirmText').text('Are you sure you want to delete ' + ids.length + ' image(s)?');
+        $('#deleteConfirmModal').modal('show');
+        $('#deleteConfirmBtn').off('click').on('click', function () {
+            var $btn = $(this);
+            $btn.html('<span class="glyphicon glyphicon-refresh spinning"></span> Deleting...').prop('disabled', true);
+            $('#deleteCancelBtn').prop('disabled', true);
+            $.ajax({
+                url: '/images/remove-batch',
+                method: 'POST',
+                traditional: true,
+                data: {imageIds: ids},
+                success: function () {
+                    var $rows = $('.image-check:checked').closest('tr');
+                    $('#deleteConfirmModal').modal('hide');
+                    $rows.fadeOut(300, function () {
+                        $(this).remove();
+                        $('#selectAll').prop('checked', false);
+                        updateCount();
+                    });
+                },
+                error: function () {
+                    alert('Failed to delete some images');
+                },
+                complete: function () {
+                    $btn.html('<span class="glyphicon glyphicon-trash"></span> Delete').prop('disabled', false);
+                    $('#deleteCancelBtn').prop('disabled', false);
+                }
+            });
+        });
+    }
+</script>

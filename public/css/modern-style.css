@@ -23,14 +23,14 @@ body {
 
 .navbar-inverse .navbar-brand:hover,
 .navbar-inverse .navbar-nav > li > a:hover {
-    color: #3498db;
+    color: #fff;
 }
 
 .navbar-inverse .navbar-nav > .active > a,
 .navbar-inverse .navbar-nav > .active > a:focus,
 .navbar-inverse .navbar-nav > .active > a:hover {
     background-color: #34495e;
-    color: #3498db;
+    color: #fff;
 }
 
 /* Card Styling */
@@ -127,6 +127,24 @@ div#terminal {
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    overflow: hidden;
+}
+
+div#terminal::-webkit-scrollbar {
+    width: 8px;
+}
+
+div#terminal::-webkit-scrollbar-track {
+    background: #2d3436;
+}
+
+div#terminal::-webkit-scrollbar-thumb {
+    background-color: #636e72;
+    border-radius: 4px;
+}
+
+div#terminal::-webkit-scrollbar-thumb:hover {
+    background-color: #7f8c8d;
 }
 
 /* Footer Styling */
@@ -209,7 +227,7 @@ footer strong {
 /* Container Group Headers */
 .group-header td {
     background-color: #ecf0f1;
-    padding: 8px 12px;
+    padding: 5px 10px;
     font-size: 13px;
     border-left: 3px solid #3498db;
 }
@@ -220,6 +238,38 @@ footer strong {
     vertical-align: middle;
 }
 
+/* Typeahead Dropdown */
+.typeahead.dropdown-menu {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    padding: 6px 0;
+    margin-top: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.typeahead.dropdown-menu > li > a {
+    padding: 8px 16px;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.15s ease;
+}
+
+.typeahead.dropdown-menu > li > a:hover,
+.typeahead.dropdown-menu > .active > a,
+.typeahead.dropdown-menu > .active > a:hover {
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 0;
+}
+
+.typeahead.dropdown-menu > .active > a *,
+.typeahead.dropdown-menu > .active > a:hover *,
+.typeahead.dropdown-menu > li > a:hover * {
+    color: #fff !important;
+}
+
 /* Container Stats */
 .container-stats {
     font-family: 'Courier New', monospace;
@@ -227,4 +277,352 @@ footer strong {
     padding: 10px;
     border-radius: 4px;
     border-left: 4px solid #3498db;
+}
+
+/* =============================================
+   UI Polish Additions
+   ============================================= */
+
+/* --- Modal Styling --- */
+.modal-content {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: #2c3e50;
+    color: #fff;
+    border-bottom: none;
+    padding: 16px 20px;
+}
+
+.modal-header .modal-title {
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.3px;
+}
+
+.modal-header .close {
+    color: #fff;
+    opacity: 0.7;
+    text-shadow: none;
+    font-size: 22px;
+    transition: opacity 0.2s ease;
+}
+
+.modal-header .close:hover {
+    opacity: 1;
+    color: #fff;
+}
+
+.modal-body {
+    padding: 24px 20px;
+}
+
+.modal-footer {
+    border-top: 1px solid #eef0f2;
+    padding: 14px 20px;
+    background-color: #fafbfc;
+}
+
+.modal-backdrop.in {
+    opacity: 0.45;
+}
+
+/* --- Form Input Styling --- */
+.form-control {
+    border: 1px solid #dce1e8;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #495057;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-appearance: none;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    outline: none;
+}
+
+.form-control:hover:not(:focus) {
+    border-color: #b8c2cc;
+}
+
+.form-control::placeholder {
+    color: #adb5bd;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #2c3e50;
+    margin-bottom: 6px;
+}
+
+/* --- Bootstrap-Select Integration --- */
+.bootstrap-select .dropdown-toggle {
+    border: 1px solid #dce1e8;
+    border-radius: 6px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bootstrap-select .dropdown-toggle:focus,
+.bootstrap-select.open .dropdown-toggle {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    outline: none;
+}
+
+.bootstrap-select .dropdown-menu {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    padding: 6px 0;
+    margin-top: 4px;
+}
+
+.bootstrap-select .dropdown-menu > li > a {
+    padding: 8px 16px;
+    font-size: 14px;
+    transition: background-color 0.15s ease;
+}
+
+.bootstrap-select .dropdown-menu > .active > a,
+.bootstrap-select .dropdown-menu > li > a:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.bootstrap-select .bs-searchbox .form-control {
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+/* --- Table Row Transitions & Refinements --- */
+.table > tbody > tr {
+    transition: background-color 0.15s ease;
+}
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+    padding: 6px 10px;
+    border-color: #eef0f2;
+}
+
+.table > thead > tr > th {
+    padding: 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: #edf2fb;
+}
+
+.table-bordered {
+    border-color: #eef0f2;
+}
+
+.table-bordered > thead > tr > th,
+.table-bordered > tbody > tr > td {
+    border-color: #eef0f2;
+}
+
+/* --- Typeahead Dropdown Polish --- */
+.typeahead.dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.typeahead.dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.typeahead.dropdown-menu::-webkit-scrollbar-thumb {
+    background-color: #c8cfd6;
+    border-radius: 3px;
+}
+
+.typeahead.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a8b0;
+}
+
+.typeahead.dropdown-menu > li > a {
+    border-left: 3px solid transparent;
+}
+
+.typeahead.dropdown-menu > li > a:hover,
+.typeahead.dropdown-menu > .active > a {
+    border-left-color: #fff;
+}
+
+/* --- Command Cell Hover Hint --- */
+.command-cell:hover {
+    background-color: #edf2fb;
+    color: #3498db;
+}
+
+/* --- Dashboard Card Icon Colors --- */
+.panel-info .icon-large {
+    color: #5bc0de;
+}
+
+.panel-primary .icon-large {
+    color: #3498db;
+}
+
+.panel-success .icon-large {
+    color: #2ecc71;
+}
+
+.panel-warning .icon-large {
+    color: #f0ad4e;
+}
+
+/* --- Dashboard Circle Stats Polish --- */
+.circle-stat {
+    transition: transform 0.2s ease;
+}
+
+.circle-stat:hover {
+    transform: scale(1.1);
+}
+
+/* --- Overview Panel Hover Refinement --- */
+[data-page="overview"] .panel:hover {
+    transform: translateY(-3px);
+}
+
+[data-page="overview"] .panel-heading a:hover {
+    text-decoration: none;
+}
+
+/* --- Group Header Refinement --- */
+.group-header td {
+    font-weight: 600;
+    color: #34495e;
+    letter-spacing: 0.3px;
+}
+
+/* --- Page Header --- */
+.page-header {
+    border-bottom: 2px solid #eef0f2;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+}
+
+.page-header h2 {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 24px;
+}
+
+.page-header h2 i {
+    margin-right: 8px;
+    color: #3498db;
+}
+
+/* --- Horizontal Rule --- */
+hr {
+    border-top: 1px solid #eef0f2;
+    margin-top: 16px;
+    margin-bottom: 20px;
+}
+
+/* --- Navbar Brand Logo --- */
+.navbar-brand-logo {
+    height: 24px;
+    margin-right: 8px;
+    vertical-align: text-bottom;
+}
+
+/* --- Button Refinements --- */
+.btn-default {
+    background-color: #fff;
+    border-color: #dce1e8;
+    color: #495057;
+}
+
+.btn-default:hover,
+.btn-default:focus {
+    background-color: #f1f2f6;
+    border-color: #b8c2cc;
+    color: #2c3e50;
+}
+
+.btn-xs {
+    border-radius: 3px;
+    font-size: 11px;
+    padding: 3px 8px;
+    letter-spacing: 0.3px;
+}
+
+/* --- Text Break Utility --- */
+.text-break {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* --- Empty State --- */
+.table tbody tr:only-child td[colspan] {
+    padding: 40px 20px;
+    color: #adb5bd;
+    font-style: italic;
+    font-size: 15px;
+}
+
+/* --- Responsive Modal --- */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 10px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-header {
+        padding: 12px 16px;
+    }
+
+    .form-group label {
+        font-size: 12px;
+    }
+}
+
+/* --- Smooth Page Load --- */
+.container-fluid,
+.container {
+    animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Vertically centered modal */
+.modal-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) !important;
+    margin: 0;
+}
+
+/* Spinning icon */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spinning {
+    display: inline-block;
+    animation: spin 1s linear infinite;
 }

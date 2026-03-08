@@ -20,12 +20,29 @@ $(document).ready(function () {
             pullIamges();
         });
 
+        var imageSearchCache = {};
         $('#imageName').typeahead({
-            limit: 10,
+            items: 10,
             source: function (query, process) {
-                return $.get("/images/search/" + $('#imageName').val(), function (data) {
-                    return process(data);
+                return $.get("/images/search/" + query, function (data) {
+                    var names = data.map(function (item) {
+                        imageSearchCache[item.name] = item;
+                        return item.name;
+                    });
+                    return process(names);
                 });
+            },
+            highlighter: function (item) {
+                var info = imageSearchCache[item] || {};
+                var desc = info.description || '';
+                if (desc.length > 60) desc = desc.substring(0, 60) + '...';
+                var stars = info.star_count || 0;
+                var official = info.is_official ? '<span class="label label-success" style="margin-left:6px;">Official</span>' : '';
+                return '<div style="line-height:1.4;">' +
+                    '<strong>' + item + '</strong>' + official +
+                    ' <span style="color:#999;font-size:12px;">&#9733; ' + stars + '</span>' +
+                    (desc ? '<br><small style="color:#888;">' + desc + '</small>' : '') +
+                    '</div>';
             }
         });
     }
@@ -132,6 +149,7 @@ function pullIamges() {
     term.loadAddon(fitAddon);
 
     term.open(document.getElementById('terminal'));
+    fitAddon.fit();
 
     var imagesName = $('#imageName').val();
     var version = $('#imageVersionName').val();
@@ -142,10 +160,6 @@ function pullIamges() {
     }
     var host = window.location.origin;
     var socket = io.connect(host);
-
-    window.onload = function () {
-        fitAddon.fit();
-    };
 
     term.onResize(function (event) {
         var rows = event.rows;

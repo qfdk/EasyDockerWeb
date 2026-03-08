@@ -4,37 +4,64 @@ const Docker = require('dockerode');
 const docker = new Docker();
 
 const returnImagesRouter = (io) => {
-    /* GET users listing. */
     router.get('/', (req, res, next) => {
-        docker.listImages((err, listImages) => {
-            res.locals.imageName = (str) => {
-                if (str) {
-                    if (str.length != 0) {
-                        return str[0].split(':')[0];
+        docker.listContainers({all: true}, (err, containers) => {
+            const usedImageIds = new Set();
+            if (containers) {
+                containers.forEach((c) => usedImageIds.add(c.ImageID));
+            }
+
+            docker.listImages((err, listImages) => {
+                res.locals.imageName = (str) => {
+                    if (str && str.length !== 0) return str[0].split(':')[0];
+                    return str;
+                };
+                res.locals.imageTag = (str) => {
+                    if (str && str.length !== 0) return str[0].split(':')[1];
+                    return str;
+                };
+                res.locals.imageSize = (str) => {
+                    const bytes = parseInt(str, 10);
+                    str = (bytes / 1000 / 1000).toFixed(2).toString().substring(0, 4);
+                    if (str.indexOf('.') === 3) return str.split('.')[0];
+                    return str;
+                };
+
+                if (listImages) {
+                    listImages.sort((a, b) => {
+                        const aUsed = usedImageIds.has(a.Id) ? 1 : 0;
+                        const bUsed = usedImageIds.has(b.Id) ? 1 : 0;
+                        return aUsed - bUsed;
+                    });
+                }
+
+                res.render('images', {
+                    images: listImages,
+                    usedImageIds: Array.from(usedImageIds)
+                });
+            });
+        });
+    });
+
+    router.post('/remove-batch', (req, res, next) => {
+        let ids = req.body?.imageIds;
+        if (!ids) return res.redirect('/images');
+        if (!Array.isArray(ids)) ids = [ids];
+        if (ids.length === 0) return res.redirect('/images');
+        let remaining = ids.length;
+        let errors = [];
+        ids.forEach((id) => {
+            const imageId = id.indexOf(':') > 0 ? id.split(':')[1] : id;
+            docker.getImage(imageId).remove({force: true}, (err) => {
+                if (err) errors.push(err.json?.message || err.message);
+                remaining--;
+                if (remaining === 0) {
+                    if (errors.length > 0) {
+                        res.status(400).json({message: errors[0], errors: errors});
+                    } else {
+                        res.json({success: true});
                     }
                 }
-                return str;
-            };
-            // image Tag
-            res.locals.imageTag = (str) => {
-                if (str) {
-                    if (str.length != 0) {
-                        return str[0].split(':')[1];
-                    }
-                }
-                return str;
-            };
-            // imageSize
-            res.locals.imageSize = (str) => {
-                const newSiez = parseInt(str, 10);
-                str = (newSiez / 1000 / 1000).toFixed(2).toString().substring(0, 4);
-                if (str.indexOf('.') == 3) {
-                    return str.split('.')[0];
-                }
-                return str;
-            };
-            res.render('images', {
-                images: listImages
             });
         });
     });

@@ -1,13 +1,189 @@
 <%- include('include/header.html') %>
-<div class="container">
+<div class="container" data-page="error">
     <div class="row">
-        <div class="text-center">
-            <div class="jumbotron">
-                <h2><%= error.status %> <%= message %></h2>
-                <pre><%= error.stack %></pre>
+        <div class="col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+            <div class="error-card">
+                <div class="error-icon-wrapper">
+                    <span class="error-icon glyphicon glyphicon-exclamation-sign"></span>
+                </div>
+                <div class="error-status"><%= error.status %></div>
+                <div class="error-message"><%= message %></div>
+                <% if (error.stack) { %>
+                <div class="error-details">
+                    <button class="btn btn-default btn-sm error-toggle-btn" type="button" onclick="toggleStack()">
+                        <i class="glyphicon glyphicon-console"></i> Show Stack Trace
+                    </button>
+                    <div class="error-stack-wrapper" id="errorStack">
+                        <pre class="error-stack"><%= error.stack %></pre>
+                    </div>
+                </div>
+                <% } %>
+                <a class="btn btn-primary error-home-btn" href="/">
+                    <i class="glyphicon glyphicon-home"></i> Return Home
+                </a>
             </div>
-            <a class="btn btn-danger" href="/">Return</a>
         </div>
     </div>
 </div>
+
+<style>
+    .error-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 50px 40px 40px;
+        margin-top: 60px;
+        margin-bottom: 40px;
+        text-align: center;
+        animation: errorFadeIn 0.5s ease-out;
+    }
+
+    @keyframes errorFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .error-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .error-icon {
+        font-size: 36px;
+        color: #fff;
+    }
+
+    .error-status {
+        font-size: 72px;
+        font-weight: 700;
+        color: #2c3e50;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .error-message {
+        font-size: 18px;
+        color: #7f8c8d;
+        margin-bottom: 30px;
+        font-weight: 400;
+    }
+
+    .error-details {
+        margin-bottom: 30px;
+    }
+
+    .error-toggle-btn {
+        border: 1px solid #dfe4ea;
+        color: #7f8c8d;
+        border-radius: 4px;
+        font-size: 12px;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+    }
+
+    .error-toggle-btn:hover {
+        border-color: #3498db;
+        color: #3498db;
+        background: #f0f7fd;
+    }
+
+    .error-stack-wrapper {
+        display: none;
+        margin-top: 15px;
+        text-align: left;
+    }
+
+    .error-stack-wrapper.open {
+        display: block;
+        animation: stackSlideDown 0.3s ease-out;
+    }
+
+    @keyframes stackSlideDown {
+        from { opacity: 0; max-height: 0; }
+        to   { opacity: 1; max-height: 500px; }
+    }
+
+    .error-stack {
+        background: #2d3436;
+        color: #dfe6e9;
+        border: none;
+        border-radius: 6px;
+        padding: 16px 20px;
+        font-size: 12px;
+        line-height: 1.6;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    .error-stack::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .error-stack::-webkit-scrollbar-track {
+        background: #2d3436;
+        border-radius: 3px;
+    }
+
+    .error-stack::-webkit-scrollbar-thumb {
+        background: #636e72;
+        border-radius: 3px;
+    }
+
+    .error-home-btn {
+        background-color: #3498db;
+        border-color: #3498db;
+        border-radius: 4px;
+        padding: 10px 30px;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+
+    .error-home-btn:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        color: #fff;
+    }
+
+    @media (max-width: 768px) {
+        .error-card {
+            padding: 35px 25px 30px;
+            margin-top: 30px;
+        }
+
+        .error-status {
+            font-size: 56px;
+        }
+
+        .error-message {
+            font-size: 16px;
+        }
+    }
+</style>
+
+<script>
+    function toggleStack() {
+        var wrapper = document.getElementById('errorStack');
+        var btn = document.querySelector('.error-toggle-btn');
+        wrapper.classList.toggle('open');
+        if (wrapper.classList.contains('open')) {
+            btn.innerHTML = '<i class="glyphicon glyphicon-console"></i> Hide Stack Trace';
+        } else {
+            btn.innerHTML = '<i class="glyphicon glyphicon-console"></i> Show Stack Trace';
+        }
+    }
+</script>
 <%- include('include/footer.html') %>

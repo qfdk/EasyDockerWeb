@@ -1,37 +1,90 @@
 <%- include('include/header.html') %>
-<!-- 使用 container-fluid 并添加自定义样式 -->
-<div class="container-fluid terminal-wrapper" data-page="logs">
-    <div id="terminal"></div>
+<div class="container-fluid logs-page" data-page="logs">
+    <div class="logs-toolbar">
+        <a href="javascript:history.back()" class="btn btn-default btn-sm logs-back-btn">
+            <i class="glyphicon glyphicon-chevron-left"></i> Back
+        </a>
+        <span class="logs-title">
+            <i class="glyphicon glyphicon-list-alt"></i> Container Logs
+        </span>
+    </div>
+    <div class="logs-terminal-wrapper">
+        <div id="terminal"></div>
+    </div>
 </div>
 
-<!-- 在 footer 之前添加样式 -->
 <style>
-    /* 移除默认的 body margin 和 padding */
-    body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;  /* 防止出现滚动条 */
+    [data-page="logs"] ~ footer {
+        display: none;
     }
 
-    /* 设置终端包装器样式 */
-    .terminal-wrapper {
-        padding: 0;  /* 移除内边距 */
-        height: 100vh;  /* 使用视口高度 */
+    .logs-page {
         display: flex;
         flex-direction: column;
+        height: calc(100vh - 70px);
+        padding: 0;
+        overflow: hidden;
     }
 
-    /* 设置终端容器样式 */
-    #terminal {
-        flex: 1;  /* 占用所有可用空间 */
-        min-height: 0;  /* 修复 flex 布局在某些浏览器中的问题 */
+    .logs-toolbar {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        background: #fff;
+        border-bottom: 1px solid #e9ecef;
+        flex-shrink: 0;
+        min-height: 42px;
     }
 
-    /* 如果使用了 xterm.js，确保其容器也是全屏的 */
-    .xterm-screen,
-    .xterm-viewport {
+    .logs-back-btn {
+        border: 1px solid #dfe4ea;
+        border-radius: 4px;
+        color: #2c3e50;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 5px 12px;
+        transition: all 0.3s ease;
+        margin-right: 14px;
+    }
+
+    .logs-back-btn:hover {
+        border-color: #3498db;
+        color: #3498db;
+        background: #f0f7fd;
+    }
+
+    .logs-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+        letter-spacing: 0.3px;
+    }
+
+    .logs-title .glyphicon {
+        color: #3498db;
+        margin-right: 6px;
+    }
+
+    .logs-terminal-wrapper {
+        flex: 1;
+        min-height: 0;
+        background: #2d3436;
+        overflow: hidden;
+    }
+
+    .logs-terminal-wrapper #terminal {
+        height: 100%;
+        width: 100%;
+    }
+
+    .logs-terminal-wrapper .xterm-viewport,
+    .logs-terminal-wrapper .xterm-screen {
         width: 100% !important;
         height: 100% !important;
+    }
+
+    .logs-terminal-wrapper .terminal.xterm {
+        padding: 8px;
     }
 </style>
 <%- include('include/footer.html') %>

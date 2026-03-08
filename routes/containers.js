@@ -38,6 +38,32 @@ const returnContainersRouter = (io) => {
         });
     });
 
+    router.post('/remove-compose', (req, res, next) => {
+        const project = req.body?.project;
+        if (!project) return res.status(400).json({message: 'No project specified'});
+        docker.listContainers({all: true}, (err, containers) => {
+            const targets = (containers || []).filter(
+                (c) => c.Labels && c.Labels['com.docker.compose.project'] === project
+            );
+            let remaining = targets.length;
+            if (remaining === 0) return res.json({success: true});
+            let errors = [];
+            targets.forEach((c) => {
+                docker.getContainer(c.Id).remove({force: true}, (err) => {
+                    if (err) errors.push(err.json?.message || err.message);
+                    remaining--;
+                    if (remaining === 0) {
+                        if (errors.length > 0) {
+                            res.status(400).json({message: errors[0], errors: errors});
+                        } else {
+                            res.json({success: true});
+                        }
+                    }
+                });
+            });
+        });
+    });
+
     router.get('/start/:id', (req, res, next) => {
         const container = docker.getContainer(req.params.id);
         container.start(null, (err, data) => {
@@ -55,10 +81,18 @@ const returnContainersRouter = (io) => {
     router.get('/remove/:id', (req, res, next) => {
         const container = docker.getContainer(req.params.id);
         container.remove({force: true}, (err, data) => {
-            if (err) {
-                res.render('error', {error: err, message: err.json.message});
+            if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+                if (err) {
+                    res.status(400).json({message: err.json?.message || err.message});
+                } else {
+                    res.json({success: true});
+                }
             } else {
-                res.redirect('/containers');
+                if (err) {
+                    res.render('error', {error: err, message: err.json.message});
+                } else {
+                    res.redirect('/containers');
+                }
             }
         });
     });

@@ -28,7 +28,7 @@
                     <tbody>
                     <% if(containers && containers.length > 0){ %>
                     <%
-                    function renderRow(container) { %>
+                    function renderRow(container, isCompose) { %>
                     <tr>
                         <td class="text-break"><%= formatName(container.Names) %></td>
                         <td class="text-break"><%= container.Image %></td>
@@ -67,13 +67,17 @@
                                 <a class="btn btn-success btn-xs" href="/containers/start/<%= container.Id %>">
                                     <span class="glyphicon glyphicon-play"></span> Start
                                 </a>
-                                <a class="btn btn-danger btn-xs" href="/containers/remove/<%= container.Id %>">
+                                <% if(!isCompose){ %>
+                                <button class="btn btn-danger btn-xs" onclick="deleteSingleContainer('<%= container.Id %>', this); return false;">
                                     <span class="glyphicon glyphicon-trash"></span> Remove
-                                </a>
+                                </button>
+                                <% } %>
                                 <% } else if(container.State=='created'){ %>
-                                <a class="btn btn-danger btn-xs" href="/containers/remove/<%= container.Id %>">
+                                <% if(!isCompose){ %>
+                                <button class="btn btn-danger btn-xs" onclick="deleteSingleContainer('<%= container.Id %>', this); return false;">
                                     <span class="glyphicon glyphicon-trash"></span> Remove
-                                </a>
+                                </button>
+                                <% } %>
                                 <% } %>
                                 <a class="btn btn-info btn-xs" href="/containers/logs/<%= container.Id %>">
                                     <span class="glyphicon glyphicon-comment"></span> Logs
@@ -90,18 +94,27 @@
                             <span class="label label-default"><%= standalone.length %></span>
                         </td>
                     </tr>
-                    <% standalone.forEach(function(container) { renderRow(container); }) %>
+                    <% standalone.forEach(function(container) { renderRow(container, false); }) %>
                     <% } %>
-                    <% Object.keys(composeGroups).forEach(function(project, idx) { %>
+                    <% Object.keys(composeGroups).forEach(function(project, idx) {
+                        var allStopped = composeGroups[project].every(function(c) { return c.State !== 'running'; });
+                    %>
                     <tr class="group-header" style="cursor: pointer;" data-group="compose-<%= idx %>">
                         <td colspan="8">
                             <span class="glyphicon glyphicon-chevron-down toggle-icon"></span>
                             <span class="glyphicon glyphicon-link"></span>
                             <strong>Compose: <%= project %></strong>
                             <span class="label label-info"><%= composeGroups[project].length %></span>
+                            <% if(allStopped){ %>
+                            <a class="btn btn-danger btn-xs compose-delete-btn" href="#"
+                               onclick="event.stopPropagation(); deleteCompose('<%= project %>', this); return false;"
+                               style="margin-left: 10px;">
+                                <span class="glyphicon glyphicon-trash"></span> Remove All
+                            </a>
+                            <% } %>
                         </td>
                     </tr>
-                    <% composeGroups[project].forEach(function(container) { renderRow(container); }) %>
+                    <% composeGroups[project].forEach(function(container) { renderRow(container, true); }) %>
                     <% }) %>
                     <% } else { %>
                     <tr>
@@ -196,6 +209,25 @@
         </div>
     </div>
 </div>
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-center" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #e74c3c; border-color: #e74c3c;">
+                <h4 class="modal-title"><span class="glyphicon glyphicon-trash"></span> Confirm Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="deleteCancelBtn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteConfirmBtn">
+                    <span class="glyphicon glyphicon-trash"></span> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Command Detail Modal -->
 <div class="modal fade" id="commandModal" tabindex="-1" role="dialog" aria-labelledby="commandModalLabel">
     <div class="modal-dialog" role="document">
@@ -243,5 +275,66 @@
         var $icon = $header.find('.toggle-icon');
         $rows.toggle();
         $icon.toggleClass('glyphicon-chevron-down glyphicon-chevron-right');
+    });
+    var pendingDelete = null;
+    function deleteCompose(project, btn) {
+        var $header = $(btn).closest('.group-header');
+        pendingDelete = {type: 'compose', project: project, $header: $header};
+        $('#deleteConfirmText').text('Remove all containers in Compose project "' + project + '"?');
+        $('#deleteConfirmModal').modal('show');
+    }
+    function deleteSingleContainer(id, btn) {
+        pendingDelete = {type: 'single', id: id, $row: $(btn).closest('tr')};
+        $('#deleteConfirmText').text('Remove this container?');
+        $('#deleteConfirmModal').modal('show');
+    }
+    $('#deleteConfirmBtn').on('click', function () {
+        if (!pendingDelete) return;
+        var $btn = $(this);
+        $btn.html('<span class="glyphicon glyphicon-refresh spinning"></span> Deleting...').prop('disabled', true);
+        $('#deleteCancelBtn').prop('disabled', true);
+        if (pendingDelete.type === 'compose') {
+            $.ajax({
+                url: '/containers/remove-compose',
+                method: 'POST',
+                data: {project: pendingDelete.project},
+                success: function () {
+                    var $rows = pendingDelete.$header.nextUntil('.group-header');
+                    $rows.fadeOut(300, function () { $(this).remove(); });
+                    pendingDelete.$header.fadeOut(300, function () { $(this).remove(); });
+                    $('#deleteConfirmModal').modal('hide');
+                },
+                error: function () {
+                    alert('Failed to remove some containers');
+                    $('#deleteConfirmModal').modal('hide');
+                },
+                complete: function () {
+                    $btn.html('<span class="glyphicon glyphicon-trash"></span> Delete').prop('disabled', false);
+                    $('#deleteCancelBtn').prop('disabled', false);
+                    pendingDelete = null;
+                }
+            });
+        } else if (pendingDelete.type === 'single') {
+            $.ajax({
+                url: '/containers/remove/' + pendingDelete.id,
+                method: 'GET',
+                success: function () {
+                    pendingDelete.$row.fadeOut(300, function () { $(this).remove(); });
+                    $('#deleteConfirmModal').modal('hide');
+                },
+                error: function () {
+                    alert('Failed to remove container');
+                    $('#deleteConfirmModal').modal('hide');
+                },
+                complete: function () {
+                    $btn.html('<span class="glyphicon glyphicon-trash"></span> Delete').prop('disabled', false);
+                    $('#deleteCancelBtn').prop('disabled', false);
+                    pendingDelete = null;
+                }
+            });
+        }
+    });
+    $('#deleteConfirmModal').on('hidden.bs.modal', function () {
+        pendingDelete = null;
     });
 </script>
