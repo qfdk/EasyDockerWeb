@@ -114,22 +114,28 @@ docker run -d \
 
 默认账号密码：**admin/admin**
 
-## Images
+## Screenshots
+
+### Login
 ![login](./images/login.png)
 
+### Overview Dashboard
 ![overview](./images/overview.png)
 
-![terminal](./images/terminal.png)
-
-![newContainer](./images/newContainer.png)
-
+### Container Management
 ![containers](./images/containers.png)
 
+### Create Container
+![newContainer](./images/newContainer.png)
+
+### Image Management
 ![images](./images/images.png)
 
+### Pull Image (with autocomplete)
 ![pull](./images/pull.png)
 
-![pull2](./images/pull2.png)
+### Interactive Terminal
+![terminal](./images/terminal.png)
 
 ## Sponsor
 <a href="https://www.jetbrains.com/?from=EasyDockerWeb"><img src="images/jetbrains-variant-4.svg" alt="JetBrains" width="200"/></a>
