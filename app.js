@@ -6,9 +6,13 @@ const app = express();
 const session = require('express-session');
 const {Server} = require('socket.io');
 
-const {checkUser} = require('./middlewares/security');
+const crypto = require('crypto');
+const {assertCredentialsConfigured, checkUser, checkSocket} = require('./middlewares/security');
 
-const io = new Server({cors: {origin: '*'}});
+assertCredentialsConfigured();
+
+// Same-origin only: no cross-origin access to the Docker control socket.
+const io = new Server();
 const favicon = require('serve-favicon');
 app.io = io;
 
@@ -23,15 +27,24 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
 
-app.use(session({
+const sessionMiddleware = session({
     saveUninitialized: false,
     resave: false,
-    secret: 'easy-docker-web',
+    // Never use a hard-coded secret: take it from the environment or generate one per start.
+    secret: process.env.EDW_SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
     cookie: {
-        maxAge: 365 * 24 * 60 * 60 * 1000,
-        expires: false
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: process.env.EDW_COOKIE_SECURE === 'true',
+        maxAge: 7 * 24 * 60 * 60 * 1000
     }
-}));
+});
+app.use(sessionMiddleware);
+
+// Share the Express session with Socket.IO and reject unauthenticated sockets
+// (container exec / attach / image pull were previously reachable without login).
+io.use((socket, next) => sessionMiddleware(socket.request, {}, next));
+io.use(checkSocket);
 
 // public files
 app.use('/static', express.static(__dirname + '/public'));
@@ -39,19 +52,6 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.all('*', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers',
-        'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
-    res.header('Access-Control-Allow-Methods',
-        'PUT, POST, GET, DELETE, OPTIONS');
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-});
 
 app.use(checkUser);
 app.use((req, res, next) => {

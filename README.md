@@ -37,28 +37,23 @@ chmod +x build.sh
 # Build the image
 docker build -t easy-docker-web .
 
-# Run the container
+# Run the container (credentials are required)
 docker run -d \
   --name easy-docker-web \
-  -p 3000:3000 \
+  -p 127.0.0.1:3000:3000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
+  -e EDW_USERNAME='your_username' \
+  -e EDW_PASSWORD='a-strong-password' \
+  -e EDW_SESSION_SECRET="$(openssl rand -hex 32)" \
   easy-docker-web
 ```
 
 Access the web interface at [http://localhost:3000](http://localhost:3000)
 
-Default credentials: **admin/admin**
-
-You can customize the username and password by setting environment variables:
-```bash
-docker run -d \
-  --name easy-docker-web \
-  -p 3000:3000 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -e EDW_USERNAME='your_username' \
-  -e EDW_PASSWORD='your_password' \
-  easy-docker-web
-```
+> ⚠️ **Security:** EasyDockerWeb has full control of the Docker socket, which is equivalent to root on the host.
+> It refuses to start unless `EDW_USERNAME` and `EDW_PASSWORD` are set (min. 8 characters, no default values).
+> Bind it to localhost or put it behind a TLS reverse proxy; set `EDW_COOKIE_SECURE=true` when served over HTTPS.
+> See [SECURITY.md](SECURITY.md) to report a vulnerability.
 
 ## Requirements
 
@@ -105,14 +100,17 @@ docker build -t easy-docker-web .
 # 运行容器
 docker run -d \
   --name easy-docker-web \
-  -p 3000:3000 \
+  -p 127.0.0.1:3000:3000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
+  -e EDW_USERNAME='你的用户名' \
+  -e EDW_PASSWORD='强密码' \
+  -e EDW_SESSION_SECRET="$(openssl rand -hex 32)" \
   easy-docker-web
 ```
 
 访问地址：[http://localhost:3000](http://localhost:3000)
 
-默认账号密码：**admin/admin**
+> ⚠️ 必须设置 `EDW_USERNAME` 和 `EDW_PASSWORD`（至少 8 位，不能用默认值），否则程序拒绝启动。Docker socket 等同宿主机 root 权限，请只绑定本机或放在 HTTPS 反向代理之后。
 
 ## Screenshots
 
